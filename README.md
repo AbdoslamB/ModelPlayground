@@ -4,7 +4,7 @@ Learn machine learning by moving things. Every model is a small lab: drag, slide
 
 Live site (after launch): https://abdoslamb.github.io/ModelPlayground/
 
-**Status:** all eleven models are ready: Linear Regression, k-Nearest Neighbors, k-Means, Naive Bayes, Decision Tree, Random Forest, Support Vector Machine, Q-Learning, t-SNE, Recurrent Neural Network and Deep Q-Network. Each has a Lab (graph, equation and table) and a short explanation of the model.
+**Status:** all eleven models are ready: Linear Regression, k-Nearest Neighbors, k-Means, Naive Bayes, Decision Tree, Random Forest, Support Vector Machine, Q-Learning, t-SNE, Recurrent Neural Network and Deep Q-Network. Each has a Lab (graph, equation and table), a short explanation of the model, and a "Try it in Python" section: the Lab's current state as a short program (with scikit-learn or NumPy, and by hand) that runs in the browser with [Pyodide](https://pyodide.org) and prints the Lab's numbers.
 
 ## Run it locally
 
@@ -32,7 +32,7 @@ npm run build && npm run test:e2e   # end-to-end tests in real browsers
 npm run size             # bundle budgets, after a build
 ```
 
-End-to-end tests need the Playwright browsers: `npx playwright install chromium webkit`.
+End-to-end tests need the Playwright browsers: `npx playwright install chromium webkit`. The Python programs' unit tests run them with your local Python, and are skipped without it; the scikit-learn and NumPy ones need the libraries in `python/requirements.txt`.
 
 ## Regenerate the data
 
