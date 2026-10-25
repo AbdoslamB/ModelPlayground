@@ -11,8 +11,10 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import { best } from './math';
+  import { numpyPython, plainPython } from './python';
   import { QLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -80,6 +82,23 @@
       text: (s: Square) => bestMove(s.cell),
     },
   ]);
+
+  // "Try it in Python": the Lab's training, replayed step by step.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      world: lab.world,
+      rewards: dataset.rewards,
+      params: lab.params,
+      seed: dataset.seed,
+      maxEpisodeSteps: dataset.maxEpisodeSteps,
+      steps: lab.steps,
+    };
+    return [
+      { id: 'numpy', label: 'With NumPy', code: numpyPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="Q-Learning Lab" highlight={lab.highlight}>
@@ -367,6 +386,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead="The Lab's maze, α, γ, ε and training so far, replayed in Python with the Lab's own random numbers, so the Q-values match the Lab's. NumPy keeps the Q-table in an array; Plain Python in lists."
+/>
 
 <style>
   .key {
