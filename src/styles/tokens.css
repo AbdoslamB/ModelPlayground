@@ -1,0 +1,109 @@
+/*
+ * Design tokens. Components use these, never raw values.
+ * Each color is light-dark(light, dark): the theme comes from color-scheme,
+ * which follows the system unless <html data-theme> overrides it.
+ * Role colors were checked for colorblind safety and contrast;
+ * tests/tokens.test.ts re-checks the contrast.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces and text */
+  --c-bg: light-dark(#ffffff, #0f1115);
+  --c-surface: light-dark(#ffffff, #171a21);
+  --c-surface-sunken: light-dark(#f4f4f2, #1d2129);
+  --c-hairline: light-dark(#e6e3dc, #2a2f3a);
+  --c-grid: light-dark(#f1f1ef, #1e222a);
+  --c-control-edge: light-dark(#8b9099, #6b7280);
+  --c-text: light-dark(#1f2328, #e6e8eb);
+  --c-muted: light-dark(#5b636e, #9ba3ae);
+  --c-focus: light-dark(#0072b2, #60a5fa);
+  --c-primary: light-dark(#0072b2, #60a5fa);
+  --c-on-primary: light-dark(#ffffff, #0f1115);
+  --c-highlight: light-dark(#fffae6, #3a3420);
+
+  /* Chart roles: marks (lines, dots, fills) */
+  --c-data: light-dark(#475569, #6b7a90);
+  --c-line: light-dark(#0072b2, #60a5fa);
+  --c-best: light-dark(#1f2328, #f2f3f5);
+  --c-error: light-dark(#d55e00, #f0814a);
+  --c-a: light-dark(#cc79a7, #e7a3cb);
+  --c-b: light-dark(#009e73, #4adba8);
+
+  /* Classes in classification models (also told apart by shape) */
+  --c-class-1: light-dark(#d55e00, #f0814a);
+  --c-class-2: light-dark(#009e73, #4adba8);
+  --c-class-3: light-dark(#0072b2, #60a5fa);
+  --c-class-4: light-dark(#cc79a7, #e7a3cb);
+
+  /* Chart roles: text (at least 4.5:1 on the page and on cards) */
+  --c-line-ink: light-dark(#0072b2, #60a5fa);
+  --c-best-ink: light-dark(#1f2328, #f2f3f5);
+  --c-error-ink: light-dark(#be5300, #f0814a);
+  --c-a-ink: light-dark(#a05e82, #e7a3cb);
+  --c-b-ink: light-dark(#00835e, #4adba8);
+  --c-class-1-ink: light-dark(#be5300, #f0814a);
+  --c-class-2-ink: light-dark(#00835e, #4adba8);
+  --c-class-3-ink: light-dark(#0072b2, #60a5fa);
+  --c-class-4-ink: light-dark(#a05e82, #e7a3cb);
+
+  /* Type. Figtree (OFL), self-hosted: open shapes, clear at any size. */
+  --font-ui:
+    'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-12: 0.75rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-30: 1.875rem;
+  --fs-38: 2.375rem;
+
+  /* Space (4 px grid) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* Shape and depth */
+  --radius-control: 6px;
+  --radius-card: 12px;
+  --shadow-float: 0 1px 2px rgb(0 0 0 / 8%), 0 8px 24px rgb(0 0 0 / 12%);
+
+  /* Motion */
+  --dur-ui: 150ms;
+  --dur-tween: 300ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Layout */
+  --sidebar-width: 264px;
+  --content-max: 1040px;
+  --topbar-height: 52px;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+@media (width < 1280px) {
+  :root {
+    --sidebar-width: 232px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-ui: 0ms;
+    --dur-tween: 0ms;
+  }
+}

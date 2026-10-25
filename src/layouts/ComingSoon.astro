@@ -1,0 +1,72 @@
+---
+import type { ModelMeta } from '../models/types';
+
+import { modelUrl } from '../lib/base-url';
+import { readyModels } from '../models/registry';
+import AppShell from './AppShell.astro';
+
+interface Props {
+  meta: ModelMeta;
+}
+
+const { meta } = Astro.props;
+---
+
+<AppShell
+  title={meta.title}
+  description={meta.summary}
+  currentSlug={meta.slug}
+  topbarTitle={meta.title}
+  noindex
+>
+  <article class="soon-page">
+    <p class="soon-page__category">{meta.category} · Coming soon</p>
+    <h1>{meta.title}</h1>
+    <p class="soon-page__summary">{meta.summary}</p>
+    <p>
+      This model is on the way. Like every model here, it will have an
+      interactive graph, a live equation and a data table that move together.
+    </p>
+    <div class="soon-page__actions">
+      {readyModels.map((model) => (
+        <a class="button button--primary" href={modelUrl(model.slug)}>
+          Try {model.title}
+        </a>
+      ))}
+      <a class="button" href="https://github.com/AbdoslamB/ModelPlayground">
+        Follow the project on GitHub
+      </a>
+    </div>
+  </article>
+</AppShell>
+
+<style>
+  .soon-page {
+    display: grid;
+    gap: var(--s-4);
+    max-width: 62ch;
+    margin-inline: auto;
+    padding: var(--s-16) var(--s-6);
+  }
+
+  .soon-page__category {
+    color: var(--c-muted);
+    font-size: var(--fs-14);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: var(--fs-38);
+  }
+
+  .soon-page__summary {
+    font-size: var(--fs-20);
+  }
+
+  .soon-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-block-start: var(--s-4);
+  }
+</style>

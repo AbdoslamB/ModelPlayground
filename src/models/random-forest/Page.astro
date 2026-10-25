@@ -1,0 +1,25 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const vote = equations.find((e) => e.id === 'vote');
+const formula = vote ? renderTex(vote.tex) : '';
+const dataset = datasets[0];
+if (!dataset) throw new Error('Random Forest has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Drag the new seed, or tap anywhere on the graph. Every tree below votes, and
+    the forest answers with the most votes.
+  </p>
+  <Lab slot="lab" client:load dataset={dataset} formula={formula} />
+  <Explain slot="explain" />
+</ModelLayout>

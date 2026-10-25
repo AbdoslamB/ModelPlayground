@@ -1,0 +1,55 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript).
+import { datasets } from './data';
+import { read, train } from './math';
+
+const dataset = datasets[0];
+const text = dataset?.examples[0];
+if (!dataset || text === undefined) throw new Error('Naive Bayes has no data');
+const reading = read(train(dataset.training), text, dataset.alphas.initial);
+const values = [
+  reading.prior,
+  ...reading.terms.map((t) => t.contribution),
+  reading.logOdds,
+];
+const reach = Math.max(...values.map(Math.abs));
+const width = 320;
+const height = 200;
+const zero = 180;
+const scale = 120 / reach;
+const rowH = (height - 20) / values.length;
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="Bars for each word of a message, pointing towards spam or towards normal"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  <line
+    x1={zero}
+    x2={zero}
+    y1="8"
+    y2={height - 8}
+    stroke="var(--c-control-edge)"
+  ></line>
+  {values.map((value, i) => (
+    <rect
+      x={Math.min(zero, zero + value * scale)}
+      y={10 + i * rowH + rowH * 0.2}
+      width={Math.abs(value * scale)}
+      height={rowH * 0.6}
+      rx="2"
+      fill={value >= 0 ? 'var(--c-class-1)' : 'var(--c-class-2)'}
+      stroke={i === values.length - 1 ? 'var(--c-text)' : 'none'}
+    />
+  ))}
+</svg>

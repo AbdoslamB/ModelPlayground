@@ -1,0 +1,25 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const gini = equations.find((e) => e.id === 'gini');
+const formula = gini ? renderTex(gini.tex) : '';
+const dataset = datasets[0];
+if (!dataset) throw new Error('Decision Tree has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Drag a split line, or pick a node in the tree and try another question. The
+    tree asks yes-or-no questions until each group is one kind.
+  </p>
+  <Lab slot="lab" client:load dataset={dataset} formula={formula} />
+  <Explain slot="explain" />
+</ModelLayout>

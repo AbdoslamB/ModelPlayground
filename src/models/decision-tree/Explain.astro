@@ -1,0 +1,191 @@
+---
+// The explanation below the Lab: the data, the symbols, how a tree is grown,
+// choosing the depth, and the model in short. Static HTML; formulas are
+// rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="tree-data">
+    <h2 id="tree-data">What you are looking at</h2>
+    <p>
+      Each shape is a day at the seaside. Across the graph is the temperature;
+      up the graph is the wind. Circles were good beach days and triangles were
+      days to stay home. Good days are warm and not too windy, but a few days
+      break the rule, as real days do.
+    </p>
+    <p>
+      The lines cut the chart into rectangles. Each rectangle is a leaf of the
+      tree below it, and its tint shows the tree's answer for any day that lands
+      there. Days the tree gets wrong have a dark ring. The numbers are made up,
+      and <strong>Refresh Data</strong> shows another 20 days.
+    </p>
+  </section>
+
+  <section aria-labelledby="tree-symbols">
+    <h2 id="tree-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>node</dt>
+        <dd>
+          A group of days, and the question that splits it in two. The top node
+          holds every day.
+        </dd>
+      </div>
+      <div>
+        <dt>leaf</dt>
+        <dd>A node with no question: it gives the answer.</dd>
+      </div>
+      <div>
+        <dt>pₖ</dt>
+        <dd>The share of days in a node that are of kind k.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">G</dt>
+        <dd>
+          Gini impurity: how mixed a node is. 0 when every day is the same kind;
+          0.5 when two kinds are split half and half.
+        </dd>
+      </div>
+      <div>
+        <dt>gain</dt>
+        <dd>How much a question lowers the impurity.</dd>
+      </div>
+      <div>
+        <dt class="sym-a">d</dt>
+        <dd>The depth: how many questions in a row the tree may ask.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="tree-how">
+    <h2 id="tree-how">How a tree is grown</h2>
+    <p>
+      A decision tree is a list of yes-or-no questions, like "Is it 19 °C or
+      colder?" Each answer sends a day left (yes) or right (no), until it
+      reaches a leaf. The tree is grown from the top, one node at a time:
+    </p>
+    <ol class="steps">
+      <li>
+        <strong>Measure how mixed the node is.</strong>
+        <div class="formula" set:html={tex.gini} />
+      </li>
+      <li>
+        <strong>Try every question:</strong> each feature, and every threshold
+        halfway between two neighbouring values. Score each by how much purer
+        its two halves are.
+        <div class="formula" set:html={tex.gain} />
+      </li>
+      <li>
+        <strong>Keep the question with the highest gain</strong>, and grow each
+        half the same way.
+      </li>
+      <li>
+        <strong>Stop</strong> when a node holds only one kind, or the tree
+        reaches its depth limit. A leaf answers with the most common kind among
+        its days.
+      </li>
+    </ol>
+    <p>
+      The tree is greedy: it picks the best question for each node on its own,
+      without looking ahead. Move a split line and the gain drops, because the
+      tree had already found the best place. The questions below it are then
+      grown again from the new halves.
+    </p>
+  </section>
+
+  <section aria-labelledby="tree-depth">
+    <h2 id="tree-depth">Choosing the depth</h2>
+    <p>
+      A shallow tree asks few questions, so it can only draw a few straight
+      borders. Two questions are enough here: "Is it warm?" then "Is it calm?"
+    </p>
+    <p>
+      A deep tree keeps asking until almost every leaf is pure, so it gets
+      nearly all of its own days right. But it does that by drawing small boxes
+      around the odd days, and a new day that lands in one of those boxes gets a
+      strange answer. The score <strong>Right on its own data</strong> always
+      rises with depth, so it cannot tell you when to stop. In practice, the
+      depth is chosen by testing the tree on days it has not seen.
+    </p>
+  </section>
+
+  <section aria-labelledby="tree-summary">
+    <h2 id="tree-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Ask</strong> the yes-or-no question that makes the two halves
+        purest.
+      </li>
+      <li>
+        <strong>Repeat</strong> in each half.
+      </li>
+      <li>
+        <strong>Stop</strong> at pure nodes or at the depth limit; each leaf
+        answers with its most common kind.
+      </li>
+      <li>
+        <strong>Predict</strong> by following the questions from the top down to
+        a leaf.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

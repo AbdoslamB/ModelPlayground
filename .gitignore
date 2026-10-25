@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+# Python libraries installed with `pip install --target .pydeps`
+.pydeps/
+__pycache__/
+
+# Build output
+/dist
+.astro/
+
+# Caches
+.eslintcache
+.stylelintcache
+
+# Tests
+/coverage
+/test-results/
+/playwright-report/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors and OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# The v1 plan (Word), kept local
+/*.docx
+
+# Private planning notes, kept local
+CLAUDE.md
+docs/PLAN.md
+docs/HANDOFF.md

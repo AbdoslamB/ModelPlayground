@@ -1,0 +1,64 @@
+{
+  "id": "fields",
+  "title": "A mouse in a field",
+  "question": "Which way should the mouse go from each square?",
+  "note": "The fields are made up: the cheese is worth +10, a cat −10, and every step costs 1.",
+  "worlds": [
+    {
+      "columns": 5,
+      "rows": 5,
+      "start": 20,
+      "goal": 4,
+      "cats": [
+        12
+      ]
+    },
+    {
+      "columns": 5,
+      "rows": 5,
+      "start": 20,
+      "goal": 4,
+      "cats": [
+        6,
+        13
+      ]
+    },
+    {
+      "columns": 5,
+      "rows": 5,
+      "start": 20,
+      "goal": 4,
+      "cats": [
+        7,
+        16
+      ]
+    }
+  ],
+  "rewards": {
+    "step": -1,
+    "goal": 10,
+    "cat": -10
+  },
+  "settings": {
+    "hidden": 24,
+    "learningRate": 0.05,
+    "batch": 8,
+    "capacity": 400,
+    "targetEvery": 100,
+    "gamma": 0.9,
+    "maxEpisodeSteps": 50,
+    "seed": 1
+  },
+  "steps": {
+    "min": 0,
+    "max": 3000,
+    "step": 50,
+    "initial": 3000
+  },
+  "epsilon": {
+    "min": 0.05,
+    "max": 0.5,
+    "step": 0.05,
+    "initial": 0.2
+  }
+}

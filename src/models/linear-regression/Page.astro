@@ -1,0 +1,26 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const model = equations.find((e) => e.id === 'model');
+const formula = model ? renderTex(model.tex) : '';
+
+// Stopping distance joins with the dataset switch later.
+const labDatasets = datasets.filter((d) => d.id === 'plants');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Drag the line or its round handles, or use the sliders. The equation, the
+    meter and the table follow every move.
+  </p>
+  <Lab slot="lab" client:load datasets={labDatasets} formula={formula} />
+  <Explain slot="explain" />
+</ModelLayout>

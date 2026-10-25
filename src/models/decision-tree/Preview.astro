@@ -1,0 +1,57 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript).
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { grow, leaves } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('Decision Tree has no data');
+const classes = dataset.classes.map((c) => c.id);
+const tree = grow(rows, classes, dataset.depths.initial, dataset.axes);
+const width = 320;
+const height = 200;
+const x = scaleLinear(dataset.axes.x, [10, 310]);
+const y = scaleLinear(dataset.axes.y, [190, 10]);
+const tint = (label: string) =>
+  label === classes[0]
+    ? 'color-mix(in srgb, var(--c-class-1) 18%, var(--c-surface))'
+    : 'color-mix(in srgb, var(--c-class-2) 18%, var(--c-surface))';
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="Days on a chart, cut into tinted rectangles by a decision tree"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {leaves(tree).map((leaf) => (
+    <rect
+      x={x(leaf.box.x[0])}
+      y={y(leaf.box.y[1])}
+      width={x(leaf.box.x[1]) - x(leaf.box.x[0])}
+      height={y(leaf.box.y[0]) - y(leaf.box.y[1])}
+      fill={tint(leaf.prediction)}
+      stroke="var(--c-text)"
+      stroke-opacity="0.4"
+    />
+  ))}
+  {rows.map((row) =>
+    row.label === classes[0] ? (
+      <circle cx={x(row.x)} cy={y(row.y)} r="5" fill="var(--c-class-1)" />
+    ) : (
+      <path
+        d={`M${x(row.x)},${y(row.y) - 6} l5.5,9.5 h-11 z`}
+        fill="var(--c-class-2)"
+      />
+    ),
+  )}
+</svg>

@@ -1,0 +1,25 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const odds = equations.find((e) => e.id === 'odds');
+const formula = odds ? renderTex(odds.tex) : '';
+const dataset = datasets[0];
+if (!dataset) throw new Error('Naive Bayes has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Type a message, or try the next one. Each word adds evidence for spam or for
+    normal, and the evidence adds up to a chance.
+  </p>
+  <Lab slot="lab" client:load dataset={dataset} formula={formula} />
+  <Explain slot="explain" dataset={dataset} />
+</ModelLayout>

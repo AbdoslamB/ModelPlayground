@@ -1,0 +1,192 @@
+---
+// The explanation below the Lab: the maze, the symbols, how Q-learning
+// learns, exploring with ε, α and γ, and the model in short. Static HTML;
+// formulas are rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="ql-data">
+    <h2 id="ql-data">What you are looking at</h2>
+    <p>
+      A mouse starts in the bottom-left square of a maze. It can move up, right,
+      down or left. Finding the cheese is worth +10, meeting the cat costs 10,
+      and every step costs 1, so a short safe path is best. Nobody tells the
+      mouse the way: it only feels the rewards.
+    </p>
+    <p>
+      Each square is cut into four triangles, one for each move. A triangle
+      turns green when that move looks good and orange when it looks bad. The
+      arrow shows the best move from each square, and the dashed line is the
+      path the mouse would take if it always picked its best move. The mazes are
+      made up, and <strong>Refresh Data</strong> shows another one.
+    </p>
+  </section>
+
+  <section aria-labelledby="ql-symbols">
+    <h2 id="ql-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>s, a</dt>
+        <dd>A square (the state) and a move from it (the action).</dd>
+      </div>
+      <div>
+        <dt>s′</dt>
+        <dd>The square the move leads to.</dd>
+      </div>
+      <div>
+        <dt>r</dt>
+        <dd>The reward for the move: −1, +10 or −10.</dd>
+      </div>
+      <div>
+        <dt>Q(s, a)</dt>
+        <dd>
+          What the mouse thinks the move is worth: the reward it expects from
+          here on.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-a">α</dt>
+        <dd>The learning rate: how far each update moves Q.</dd>
+      </div>
+      <div>
+        <dt class="sym-b">γ</dt>
+        <dd>How much later rewards count compared with rewards now.</dd>
+      </div>
+      <div>
+        <dt class="sym-error">ε</dt>
+        <dd>
+          How often the mouse tries a random move instead of its best one.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-line">n</dt>
+        <dd>
+          How many episodes the mouse has played. An episode ends at the cheese,
+          at the cat, or after 100 moves.
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="ql-how">
+    <h2 id="ql-how">How the mouse learns</h2>
+    <p>
+      At first every Q is 0, so the mouse wanders. After each move it updates
+      the value of the move it just made, using only what it saw: the reward,
+      and the best value it already gives the square it landed on.
+    </p>
+    <div class="formula" set:html={tex.update} />
+    <p>
+      The part in brackets is the surprise: how much better or worse the move
+      turned out than expected. Q moves a fraction α of the way towards it.
+    </p>
+    <p>
+      The first time the mouse finds the cheese, only the last move learns that
+      it is good. Next time, the move before it sees a square worth something,
+      and learns that too. Episode by episode, the good news spreads backwards
+      from the cheese to the start, until the arrows lead all the way there.
+    </p>
+    <div class="formula" set:html={tex.value} />
+  </section>
+
+  <section aria-labelledby="ql-explore">
+    <h2 id="ql-explore">Exploring, and the other settings</h2>
+    <p>
+      If the mouse always took its best known move, it might keep using the
+      first path it found and never discover a shorter one. So with chance ε it
+      tries a random move instead. With ε = 0 it never explores; with a large ε
+      it wanders so much that its runs are long and messy.
+    </p>
+    <p>
+      A large α learns fast but forgets fast; a small α learns slowly but
+      steadily. In this maze nothing is random except the mouse's own choices,
+      so a large α works well. γ near 1 makes the mouse patient: the cheese
+      still counts when it is many steps away. A small γ makes it short-sighted,
+      and the good news from the cheese fades before it reaches the start.
+    </p>
+    <p>
+      Click a square to turn it into a wall, then a cat, then back. The mouse
+      learns the new maze from scratch, with the same luck as before.
+    </p>
+  </section>
+
+  <section aria-labelledby="ql-summary">
+    <h2 id="ql-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Act:</strong> pick the best known move, or with chance ε a
+        random one.
+      </li>
+      <li>
+        <strong>Observe</strong> the reward and the next square.
+      </li>
+      <li>
+        <strong>Update</strong> Q for that move towards the reward plus γ times
+        the best value of the next square.
+      </li>
+      <li>
+        <strong>Repeat</strong> over many episodes, until the best moves lead to
+        the goal.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const cost = equations.find((e) => e.id === 'cost');
+const formula = cost ? renderTex(cost.tex) : '';
+const dataset = datasets[0];
+if (!dataset) throw new Error('t-SNE has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Press Play to watch the map form, or change the perplexity. Pictures that
+    look alike end up close together.
+  </p>
+  <Lab slot="lab" client:load dataset={dataset} formula={formula} />
+  <Explain slot="explain" />
+</ModelLayout>

@@ -1,0 +1,178 @@
+---
+// The explanation below the Lab: the data, the symbols, how k-NN decides,
+// how to choose k, and the model in short. Static HTML; formulas are
+// rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="knn-data">
+    <h2 id="knn-data">What you are looking at</h2>
+    <p>
+      Each shape is a fruit we already know. Across the graph is its width; up
+      the graph is its height, both in centimetres. Circles are apples and
+      triangles are pears. Apples are round, so their width and height are
+      close. Pears are taller than they are wide.
+    </p>
+    <p>
+      The diamond is a new fruit we have not labelled yet. Its colour shows what
+      the model thinks it is. The numbers are made up, and{' '}
+      <strong>Refresh Data</strong> shows another basket of 14 fruits.
+    </p>
+  </section>
+
+  <section aria-labelledby="knn-symbols">
+    <h2 id="knn-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>q</dt>
+        <dd>The new fruit, the one we want to label.</dd>
+      </div>
+      <div>
+        <dt>x, y</dt>
+        <dd>The width and height of a known fruit.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">d</dt>
+        <dd>
+          The distance from the new fruit to a known fruit: the length of the
+          straight line between them.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-line">k</dt>
+        <dd>How many of the nearest fruits get a vote.</dd>
+      </div>
+      <div>
+        <dt>ŷ</dt>
+        <dd>The prediction: apple or pear.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="knn-how">
+    <h2 id="knn-how">How the model decides</h2>
+    <p>
+      k-Nearest Neighbors follows a simple idea: things that look alike are
+      usually the same kind. To label the new fruit, it takes three steps.
+    </p>
+    <ol class="steps">
+      <li>
+        <strong>Measure:</strong> find the distance from the new fruit to every
+        known fruit.
+        <div class="formula" set:html={tex.distance} />
+      </li>
+      <li>
+        <strong>Pick the neighbours:</strong> keep the k fruits with the
+        smallest distance. The dashed circle on the graph goes around them.
+      </li>
+      <li>
+        <strong>Vote:</strong> each neighbour votes for its own kind, and the
+        most votes wins.
+      </li>
+    </ol>
+    <p>
+      That is all. The model does not learn a formula in advance. It simply
+      remembers every fruit and looks at the closest ones each time a new fruit
+      arrives.
+    </p>
+  </section>
+
+  <section aria-labelledby="knn-k">
+    <h2 id="knn-k">Choosing k</h2>
+    <p>
+      With <strong>k = 1</strong>, only the single nearest fruit decides. One
+      odd fruit, like a round pear, then claims the space around it. Turn on{' '}
+      <strong>Areas</strong> to see the shaded region each kind would win, and
+      watch the border wiggle around single fruits.
+    </p>
+    <p>
+      With a larger k, more fruits vote, so one odd fruit is outvoted and the
+      border becomes smoother. But if k is too large, the vote reaches fruits
+      far away, and small groups get drowned out.
+    </p>
+    <p>
+      To compare values of k fairly, the score{' '}
+      <strong>Right on its own data</strong> hides each known fruit in turn and
+      asks its k nearest neighbours to guess it. A fruit never votes for itself.
+      We use odd values of k, so with two kinds of fruit the vote can never tie.
+    </p>
+  </section>
+
+  <section aria-labelledby="knn-summary">
+    <h2 id="knn-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Remember</strong> every known fruit and its kind.
+      </li>
+      <li>
+        <strong>Measure</strong> the distance from a new fruit to each of them.
+      </li>
+      <li>
+        <strong>Vote:</strong> the k nearest fruits decide the new fruit's kind.
+      </li>
+      <li>
+        <strong>Choose k</strong> by checking how often the model is right on
+        fruits it has not seen.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

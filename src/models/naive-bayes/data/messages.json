@@ -1,0 +1,159 @@
+{
+  "id": "messages",
+  "title": "Spam or not",
+  "question": "Is this message spam?",
+  "note": "The messages are made up: 10 spam and 15 normal, in simple words, so every count is easy to follow.",
+  "classes": [
+    {
+      "id": "spam",
+      "name": "spam",
+      "plural": "spam messages"
+    },
+    {
+      "id": "normal",
+      "name": "normal",
+      "plural": "normal messages"
+    }
+  ],
+  "training": [
+    {
+      "id": 1,
+      "text": "win a free prize now",
+      "label": "spam"
+    },
+    {
+      "id": 2,
+      "text": "claim your free money today",
+      "label": "spam"
+    },
+    {
+      "id": 3,
+      "text": "you won cash click now",
+      "label": "spam"
+    },
+    {
+      "id": 4,
+      "text": "free gift card click here",
+      "label": "spam"
+    },
+    {
+      "id": 5,
+      "text": "urgent offer win money",
+      "label": "spam"
+    },
+    {
+      "id": 6,
+      "text": "cheap deal buy now",
+      "label": "spam"
+    },
+    {
+      "id": 7,
+      "text": "click here to claim your prize",
+      "label": "spam"
+    },
+    {
+      "id": 8,
+      "text": "limited offer free cash",
+      "label": "spam"
+    },
+    {
+      "id": 9,
+      "text": "win big money today",
+      "label": "spam"
+    },
+    {
+      "id": 10,
+      "text": "act now free offer",
+      "label": "spam"
+    },
+    {
+      "id": 11,
+      "text": "are we still meeting for lunch today",
+      "label": "normal"
+    },
+    {
+      "id": 12,
+      "text": "can you send me the report",
+      "label": "normal"
+    },
+    {
+      "id": 13,
+      "text": "see you at the meeting tomorrow",
+      "label": "normal"
+    },
+    {
+      "id": 14,
+      "text": "thanks for the lunch",
+      "label": "normal"
+    },
+    {
+      "id": 15,
+      "text": "here is the report for today",
+      "label": "normal"
+    },
+    {
+      "id": 16,
+      "text": "call me when you get home",
+      "label": "normal"
+    },
+    {
+      "id": 17,
+      "text": "the meeting moved to friday",
+      "label": "normal"
+    },
+    {
+      "id": 18,
+      "text": "can we talk tomorrow",
+      "label": "normal"
+    },
+    {
+      "id": 19,
+      "text": "happy birthday see you soon",
+      "label": "normal"
+    },
+    {
+      "id": 20,
+      "text": "please send the photos from friday",
+      "label": "normal"
+    },
+    {
+      "id": 21,
+      "text": "dinner is at home tonight",
+      "label": "normal"
+    },
+    {
+      "id": 22,
+      "text": "did you get my message",
+      "label": "normal"
+    },
+    {
+      "id": 23,
+      "text": "the train is late again",
+      "label": "normal"
+    },
+    {
+      "id": 24,
+      "text": "lunch at noon works for me",
+      "label": "normal"
+    },
+    {
+      "id": 25,
+      "text": "we won the game today",
+      "label": "normal"
+    }
+  ],
+  "examples": [
+    "win a free lunch today",
+    "can you send the prize money now",
+    "see you at lunch tomorrow",
+    "click here for the free report",
+    "you won a free gift card",
+    "thanks see you friday"
+  ],
+  "alphas": {
+    "min": 0.1,
+    "max": 2,
+    "step": 0.1,
+    "initial": 1
+  }
+}

@@ -1,0 +1,209 @@
+@import url('./tokens.css');
+
+/* Page changes cross-fade; the sidebar keeps its own name so it stays still. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 18 px text with generous line spacing, so long reads stay easy. */
+html {
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-ui);
+  font-size: 112.5%;
+  line-height: 1.7;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Very small phones: 17 px text, so controls and lines of text fit. */
+@media (width < 400px) {
+  html {
+    font-size: 106.25%;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--c-bg);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--c-line-ink);
+  text-underline-offset: 0.18em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+/* Every changing number keeps its width. */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--s-2);
+  inset-inline-start: var(--s-2);
+  z-index: 100;
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--radius-control);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-float);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* Role colors for symbols in equations, labels and table headers. */
+.sym-a {
+  color: var(--c-a-ink);
+}
+
+.sym-b {
+  color: var(--c-b-ink);
+}
+
+.sym-line {
+  color: var(--c-line-ink);
+}
+
+.sym-best {
+  color: var(--c-best-ink);
+}
+
+.sym-error {
+  color: var(--c-error-ink);
+}
+
+.sym-class-1 {
+  color: var(--c-class-1-ink);
+}
+
+.sym-class-2 {
+  color: var(--c-class-2-ink);
+}
+
+.sym-class-3 {
+  color: var(--c-class-3-ink);
+}
+
+.sym-class-4 {
+  color: var(--c-class-4-ink);
+}
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--c-control-edge);
+  border-radius: var(--radius-control);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-ui),
+    border-color var(--dur-ui);
+}
+
+.button:hover {
+  background: var(--c-surface-sunken);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.button--primary {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.button--primary:hover {
+  background: var(--c-primary);
+  filter: brightness(1.08);
+}
+
+.button--quiet {
+  border-color: transparent;
+  background: transparent;
+}
+
+/* KaTeX inherits the text color, so formulas follow the theme. */
+.katex {
+  font-size: 1.12em;
+  color: inherit;
+}

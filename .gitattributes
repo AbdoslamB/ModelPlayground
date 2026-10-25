@@ -1,0 +1,6 @@
+# Keep LF line endings everywhere, including Windows checkouts: Prettier and
+# CI expect them, and CRLF copies make formatting checks fail locally.
+* text=auto eol=lf
+
+# Raw data stays byte-for-byte as downloaded, so its checksums hold.
+python/raw/** -text

@@ -1,0 +1,187 @@
+---
+// The explanation below the Lab: the data, the symbols, how a forest is
+// grown, why votes help, choosing T, and the model in short. Static HTML;
+// formulas are rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="forest-data">
+    <h2 id="forest-data">What you are looking at</h2>
+    <p>
+      Each shape is a seed in a tray. Across the graph is how warm its soil was;
+      up the graph is how much water it got each day. Circles sprouted and
+      triangles stayed dry. Seeds sprout when warmth and water together are
+      enough, so the border between them runs on a slant.
+    </p>
+    <p>
+      The diamond is a new seed. Its colour is the forest's answer, and the
+      shading shows the answer everywhere else: stronger where more trees agree.
+      Below the graph, every tree is drawn as a small map. The numbers are made
+      up, and <strong>Refresh Data</strong> shows another tray of 30 seeds.
+    </p>
+  </section>
+
+  <section aria-labelledby="forest-symbols">
+    <h2 id="forest-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>q</dt>
+        <dd>The new seed, the one we want an answer for.</dd>
+      </div>
+      <div>
+        <dt>hₜ(q)</dt>
+        <dd>The answer of tree number t.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">T</dt>
+        <dd>How many trees vote. It is always odd, so the vote never ties.</dd>
+      </div>
+      <div>
+        <dt>n</dt>
+        <dd>How many seeds there are to learn from.</dd>
+      </div>
+      <div>
+        <dt>ŷ</dt>
+        <dd>The forest's answer: sprouts or stays dry.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="forest-how">
+    <h2 id="forest-how">How a forest is grown</h2>
+    <p>
+      A random forest is many small decision trees that vote. If every tree
+      learned from the same seeds in the same way, they would all be the same
+      tree, and the vote would add nothing. So each tree gets two kinds of
+      chance:
+    </p>
+    <ol class="steps">
+      <li>
+        <strong>Its own sample.</strong> Each tree draws n seeds at random,
+        putting each one back after drawing it. Some seeds come twice or more,
+        and some not at all. Pick a tree to see its sample on the big graph.
+        <div class="formula" set:html={tex.bootstrap} />
+        <div class="formula" set:html={tex.unseen} />
+      </li>
+      <li>
+        <strong>Its own questions.</strong> At each question, the tree may only
+        look at one feature, picked at random: temperature or water. It then
+        finds the best threshold on that feature.
+      </li>
+      <li>
+        <strong>A vote.</strong> For a new seed, each tree gives its answer, and
+        the most common answer wins.
+        <div class="formula" set:html={tex.vote} />
+      </li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="forest-why">
+    <h2 id="forest-why">Why many trees beat one</h2>
+    <p>
+      One tree can only cut the chart with straight lines across and up, so a
+      slanted border becomes a rough staircase. Each tree's staircase is
+      different, and its mistakes are in different places. When they vote, the
+      mistakes tend to cancel out, and the forest's border follows the slant
+      more closely than any single tree.
+    </p>
+    <p>
+      Odd seeds near the border fool some trees but not others: a tree that
+      never drew the odd seed does not bend around it. That is why a forest is
+      steadier than one deep tree.
+    </p>
+  </section>
+
+  <section aria-labelledby="forest-t">
+    <h2 id="forest-t">Choosing T, and an honest score</h2>
+    <p>
+      More trees make the vote steadier, and they never make the forest worse at
+      learning; they only cost time. After a few dozen trees the answer hardly
+      changes.
+    </p>
+    <p>
+      Every tree leaves out about a third of the seeds, which gives a free test.
+      The score <strong>Right on unseen seeds</strong> asks, for each seed, only
+      the trees that did not draw it. This is called the out-of-bag score, and
+      it tells you how the forest does on seeds it has not learned from.
+    </p>
+  </section>
+
+  <section aria-labelledby="forest-summary">
+    <h2 id="forest-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Sample:</strong> each tree draws its own seeds, with repeats.
+      </li>
+      <li>
+        <strong>Grow:</strong> each question looks at one feature picked at
+        random.
+      </li>
+      <li>
+        <strong>Vote:</strong> the forest answers with the most common answer.
+      </li>
+      <li>
+        <strong>Check:</strong> test each seed on the trees that never saw it.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

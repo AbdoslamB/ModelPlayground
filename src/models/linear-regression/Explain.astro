@@ -1,0 +1,230 @@
+---
+// The explanation below the Lab: the data, the symbols, how a line is
+// measured, how the best line is found (the optimization), and the model in
+// short. Static HTML; formulas are rendered by KaTeX at build time.
+import { formatNumber } from '../../lib/format';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import { predict } from './math';
+
+const tex = Object.fromEntries(
+  equations.map((e) => [e.id, { html: renderTex(e.tex), words: e.words }]),
+);
+const dataset = datasets[0];
+const first = dataset?.reference[0];
+const example = first ? predict(first, dataset.exampleX) : NaN;
+---
+
+<div class="explain">
+  <section aria-labelledby="explain-data">
+    <h2 id="explain-data">What you are looking at</h2>
+    <p>
+      Each dot is one measurement of a growing plant. Across the graph (x) is
+      the plant's age in weeks; up the graph (y) is its height in centimetres.
+      The table lists the same 10 measurements, one per row.
+    </p>
+    <p>
+      The numbers are made up. Each plant starts between 1 and 10 cm tall and
+      grows between 1 and 10 cm a week, and every measurement is a little off,
+      just as real measurements are. <strong>Refresh Data</strong> shows a
+      different plant, with its own start and its own growth.
+    </p>
+  </section>
+
+  <section aria-labelledby="explain-symbols">
+    <h2 id="explain-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>x</dt>
+        <dd>The input we know: the plant's age, in weeks.</dd>
+      </div>
+      <div>
+        <dt>y</dt>
+        <dd>The real result: the plant's measured height.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">ŷ</dt>
+        <dd>
+          "y-hat": the line's prediction of the height. The hat means
+          "estimated".
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-a">a</dt>
+        <dd>
+          The intercept: the height of the line at week 0, when the plant was
+          first measured. It moves the whole line up or down.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-b">b</dt>
+        <dd>
+          The slope: how many centimetres the plant grows each week. It tilts
+          the line.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-error">e</dt>
+        <dd>
+          The miss for one point: e = y − ŷ. Positive when the point is above
+          the line, negative when it is below.
+        </dd>
+      </div>
+      <div>
+        <dt>MSE</dt>
+        <dd>
+          Mean squared error: the average of all the misses, each one squared.
+        </dd>
+      </div>
+      <div>
+        <dt>Typical miss</dt>
+        <dd>
+          The square root of the MSE. It is back in centimetres, so it reads as
+          "the line is usually off by about this much".
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="explain-error">
+    <h2 id="explain-error">How good is a line?</h2>
+    <p>
+      No straight line goes through every point, so every line misses a little.
+      The miss for one point is the gap between the real value and the
+      prediction:
+    </p>
+    <div class="formula" set:html={tex.miss?.html} />
+    <p>
+      To score the whole line, square every miss and take the average. Squaring
+      makes every miss count as positive, so misses above and below the line
+      cannot cancel out, and it punishes big misses more than small ones:
+    </p>
+    <div class="formula" set:html={tex.mse?.html} />
+    <p>
+      The smaller the MSE, the better the line fits. Turn on{' '}
+      <strong>Misses</strong> to see each e as a dotted line from the point to
+      your line.
+    </p>
+  </section>
+
+  <section aria-labelledby="explain-best">
+    <h2 id="explain-best">Finding the best line: the optimization</h2>
+    <p>
+      Training a linear regression model means choosing a and b so that the MSE
+      is as small as possible. That search is the optimization.
+    </p>
+    <p>
+      Imagine trying every pair of a and b and writing down the MSE of each
+      line. The results form a smooth bowl with exactly one lowest point, and
+      that point is the best line. For a straight line, two formulas jump
+      straight to it:
+    </p>
+    <div class="formula" set:html={tex.best?.html} />
+    <p>
+      x̄ and ȳ are the averages of x and y, so the best line always passes
+      through the average point. Turn on <strong>Best Line</strong> to compare
+      it with yours. Because every measurement is a little off, the best line
+      lands close to the plant's real start and growth, but rarely exactly on
+      them: the line can only learn from the data it sees.
+    </p>
+    <p>
+      Bigger models have no such formula. There, the computer walks down the
+      bowl instead: it nudges a and b a little in the direction that lowers the
+      error, again and again, until the error stops shrinking. This is called
+      gradient descent, and it is how most machine-learning models are trained.
+    </p>
+  </section>
+
+  <section aria-labelledby="explain-summary">
+    <h2 id="explain-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Choose a line:</strong> ŷ = a + b·x turns any age into a
+        predicted height.
+      </li>
+      <li>
+        <strong>Measure how wrong it is:</strong> square every miss and average
+        them (the MSE).
+      </li>
+      <li>
+        <strong>Optimize:</strong> find the a and b that make the MSE as small
+        as possible.
+      </li>
+      <li>
+        <strong>Predict:</strong> for a new x, read ŷ off the line. For the
+        first plant, the best line predicts that at 4 weeks old it is about{' '}
+        {formatNumber(example, 0)} cm tall.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  /* MSE and "Typical miss" are words, not symbols. */
+  .symbols div:nth-last-child(-n + 2) dt {
+    font-family: inherit;
+    font-size: var(--fs-16);
+    font-style: normal;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+
+  @media (width < 560px) {
+    .symbols div {
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+      gap: var(--s-3);
+    }
+  }
+</style>

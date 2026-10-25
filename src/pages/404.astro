@@ -1,0 +1,40 @@
+---
+import AppShell from '../layouts/AppShell.astro';
+import { modelUrl, url } from '../lib/base-url';
+import { models } from '../models/registry';
+---
+
+<AppShell title="Page not found" description="This page doesn't exist." noindex>
+  <article class="not-found">
+    <h1>This page doesn't exist</h1>
+    <p>
+      The link may be old or mistyped. Go to the <a href={url()}>home page</a>,
+      or open a model:
+    </p>
+    <ul>
+      {models.map((model) => (
+        <li>
+          <a href={modelUrl(model.slug)}>{model.title}</a>
+          {model.status === 'coming-soon' && ' (coming soon)'}
+        </li>
+      ))}
+    </ul>
+  </article>
+</AppShell>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: var(--s-4);
+    max-width: 62ch;
+    margin-inline: auto;
+    padding: var(--s-16) var(--s-6);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--s-1);
+    margin: 0;
+    padding-inline-start: 1.2em;
+  }
+</style>

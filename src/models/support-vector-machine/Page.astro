@@ -1,0 +1,32 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const tex = (id: string) => {
+  const found = equations.find((e) => e.id === id);
+  return found ? renderTex(found.tex) : '';
+};
+const dataset = datasets[0];
+if (!dataset) throw new Error('Support Vector Machine has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Drag any student, or change C. The border keeps the widest street it can
+    between the two groups.
+  </p>
+  <Lab
+    slot="lab"
+    client:load
+    dataset={dataset}
+    formulas={{ linear: tex('linear'), rbf: tex('rbf') }}
+  />
+  <Explain slot="explain" />
+</ModelLayout>

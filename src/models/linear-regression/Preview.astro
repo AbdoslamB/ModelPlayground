@@ -1,0 +1,58 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript).
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { fit, predict, sums } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('Linear Regression has no data');
+const width = 320;
+const height = 200;
+const pad = 14;
+const x = scaleLinear(dataset.axes.x, [pad, width - pad]);
+const y = scaleLinear(dataset.axes.y, [height - pad, pad]);
+const best = fit(
+  sums(
+    rows.map((r) => r.x),
+    rows.map((r) => r.y),
+  ),
+);
+const [x0, x1] = dataset.axes.x;
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="A scatter plot with a straight line through the points"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {rows.map((row) => (
+    <circle
+      cx={x(row.x)}
+      cy={y(row.y)}
+      r="3.5"
+      fill="var(--c-data)"
+      fill-opacity="0.75"
+    />
+  ))}
+  {best && (
+    <line
+      x1={x(x0)}
+      y1={y(predict(best, x0))}
+      x2={x(x1)}
+      y2={y(predict(best, x1))}
+      stroke="var(--c-line)"
+      stroke-width="3"
+      stroke-linecap="round"
+    />
+  )}
+</svg>

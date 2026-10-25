@@ -1,0 +1,163 @@
+---
+import type { ModelMeta } from '../models/types';
+
+import { modelUrl, url } from '../lib/base-url';
+import { comingSoonModels, neighbours } from '../models/registry';
+import AppShell from './AppShell.astro';
+
+interface Props {
+  meta: ModelMeta;
+}
+
+const { meta } = Astro.props;
+const { previous, next } = neighbours(meta.slug);
+---
+
+<AppShell
+  title={meta.title}
+  description={meta.summary}
+  currentSlug={meta.slug}
+  topbarTitle={meta.title}
+>
+  <article class="model">
+    <header class="model__header">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={url()}>Models</a>
+        <span aria-hidden="true">/</span>
+        <span>{meta.category}</span>
+      </nav>
+      <h1 class="model__title">{meta.title}</h1>
+      <p class="model__promise">{meta.summary}</p>
+      <div class="model__lead">
+        <slot name="lead" />
+      </div>
+    </header>
+
+    <slot name="lab" />
+
+    <div class="model__explain" id="explain">
+      <slot name="explain" />
+    </div>
+
+    <nav class="pager" aria-label="More models">
+      {previous ? (
+        <a class="pager__link" href={modelUrl(previous.slug)}>
+          <span class="pager__hint">Previous</span>
+          {previous.title}
+        </a>
+      ) : (
+        <span />
+      )}
+      {next ? (
+        <a class="pager__link pager__link--next" href={modelUrl(next.slug)}>
+          <span class="pager__hint">Next</span>
+          {next.title}
+        </a>
+      ) : comingSoonModels.length > 0 ? (
+        <a class="pager__link pager__link--next" href={url('', '#coming-soon')}>
+          <span class="pager__hint">Next</span>
+          See the models coming soon
+        </a>
+      ) : (
+        <a class="pager__link pager__link--next" href={url('')}>
+          <span class="pager__hint">Next</span>
+          Back to all models
+        </a>
+      )}
+    </nav>
+  </article>
+</AppShell>
+
+<style>
+  .model {
+    display: grid;
+    /* Never wider than the screen, whatever the Lab's content wants. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-8);
+    /* One centered column, as wide as the graph and a comfortable line of
+       text (680 px), plus the side padding. */
+    max-width: calc(680px + 2 * var(--s-6));
+    margin-inline: auto;
+    padding: var(--s-8) var(--s-6) var(--s-16);
+  }
+
+  @media (width < 768px) {
+    .model {
+      gap: var(--s-6);
+      padding: var(--s-4) var(--s-4) var(--s-12);
+    }
+  }
+
+  .model__header {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .crumbs {
+    display: flex;
+    gap: var(--s-2);
+    color: var(--c-muted);
+    font-size: var(--fs-14);
+  }
+
+  .crumbs a {
+    color: inherit;
+  }
+
+  .model__title {
+    font-size: var(--fs-38);
+    letter-spacing: -0.01em;
+  }
+
+  @media (width < 768px) {
+    .model__title {
+      font-size: var(--fs-30);
+    }
+  }
+
+  .model__promise {
+    max-width: 60ch;
+    color: var(--c-muted);
+    font-size: var(--fs-18);
+  }
+
+  .model__lead {
+    max-width: 62ch;
+  }
+
+  .model__explain {
+    margin-block-start: var(--s-8);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1600px;
+  }
+
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-block-start: var(--s-6);
+    border-block-start: 1px solid var(--c-hairline);
+  }
+
+  .pager__link {
+    display: grid;
+    gap: 2px;
+    color: var(--c-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .pager__link:hover {
+    color: var(--c-line-ink);
+  }
+
+  .pager__link--next {
+    text-align: end;
+  }
+
+  .pager__hint {
+    color: var(--c-muted);
+    font-size: var(--fs-12);
+    font-weight: 500;
+  }
+</style>

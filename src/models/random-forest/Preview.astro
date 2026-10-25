@@ -1,0 +1,59 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// a row of small trees, each cutting the chart its own way.
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { leaves, makeForest } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('Random Forest has no data');
+const classes = dataset.classes.map((c) => c.id);
+const trees = makeForest(rows, classes, dataset.maxDepth, dataset.axes, 1, 6);
+const width = 320;
+const height = 200;
+const size = 92;
+const tint = (label: string) =>
+  label === classes[0]
+    ? 'color-mix(in srgb, var(--c-class-1) 30%, var(--c-surface))'
+    : 'color-mix(in srgb, var(--c-class-2) 30%, var(--c-surface))';
+const maps = trees.map((tree, i) => {
+  const left = 12 + (i % 3) * (size + 10);
+  const top = 6 + Math.floor(i / 3) * (size + 4);
+  const x = scaleLinear(dataset.axes.x, [left, left + size]);
+  const y = scaleLinear(dataset.axes.y, [top + size, top]);
+  return leaves(tree.root).map((leaf) => ({
+    x: x(leaf.box.x[0]),
+    y: y(leaf.box.y[1]),
+    width: x(leaf.box.x[1]) - x(leaf.box.x[0]),
+    height: y(leaf.box.y[0]) - y(leaf.box.y[1]),
+    fill: tint(leaf.prediction),
+  }));
+});
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="Six small decision trees, each cutting the chart into different rectangles"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {maps.flat().map((r) => (
+    <rect
+      x={r.x}
+      y={r.y}
+      width={r.width}
+      height={r.height}
+      fill={r.fill}
+      stroke="var(--c-surface)"
+    />
+  ))}
+</svg>

@@ -1,0 +1,84 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// the students, the border and its margin, with support vectors ringed.
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { stepTo, supportVectors, train } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('Support Vector Machine has no data');
+const signs = rows.map(
+  (r) => dataset.classes.find((c) => c.id === r.label)?.sign ?? 1,
+);
+const machine = train(rows, signs, 1, { type: 'linear' });
+const support = supportVectors(machine);
+const width = 320;
+const height = 200;
+const x = scaleLinear(dataset.axes.x, [60, 260]);
+const y = scaleLinear(dataset.axes.y, [195, -5]);
+// Each line through two far-apart points where f = level.
+const line = (level: number) => {
+  const a = stepTo(machine, { x: -10, y: 5 }, level);
+  const b = stepTo(machine, { x: 20, y: 5 }, level);
+  return { x1: x(a.x), y1: y(a.y), x2: x(b.x), y2: y(b.y) };
+};
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="Two groups of students split by a straight border with a dashed margin on each side"
+>
+  <defs>
+    <clipPath id="svm-preview-clip">
+      <rect x="1" y="1" width={width - 2} height={height - 2} rx="8"></rect>
+    </clipPath>
+  </defs>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  <g clip-path="url(#svm-preview-clip)">
+    <line
+      {...line(1)}
+      stroke="var(--c-class-2)"
+      stroke-dasharray="6 4"
+      stroke-width="2"
+    ></line>
+    <line
+      {...line(-1)}
+      stroke="var(--c-class-1)"
+      stroke-dasharray="6 4"
+      stroke-width="2"
+    ></line>
+    <line {...line(0)} stroke="var(--c-text)" stroke-width="2.5"></line>
+    {support.map((i) => {
+      const r = rows[i];
+      return r ? (
+        <circle
+          cx={x(r.x)}
+          cy={y(r.y)}
+          r="9"
+          fill="none"
+          stroke="var(--c-text)"
+        />
+      ) : null;
+    })}
+    {rows.map((r) =>
+      r.label === 'pass' ? (
+        <circle cx={x(r.x)} cy={y(r.y)} r="5" fill="var(--c-class-2)" />
+      ) : (
+        <path
+          d={`M${x(r.x)},${y(r.y) - 6} l5.5,9.5 h-11 z`}
+          fill="var(--c-class-1)"
+        />
+      ),
+    )}
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import ComingSoon from '../../layouts/ComingSoon.astro';
+import { comingSoonModels } from '../../models/registry';
+
+// Ready models get their own route from the model-pages integration in
+// astro.config.mjs (so each page loads only its own CSS). This route builds
+// the Coming soon pages.
+export const getStaticPaths = (() =>
+  comingSoonModels.map((meta) => ({
+    params: { slug: meta.slug },
+    props: { meta },
+  }))) satisfies GetStaticPaths;
+
+const { meta } = Astro.props;
+---
+
+<ComingSoon meta={meta} />

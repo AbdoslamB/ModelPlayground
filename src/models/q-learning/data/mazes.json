@@ -1,0 +1,110 @@
+{
+  "id": "mazes",
+  "title": "A mouse in a maze",
+  "question": "Which way should the mouse go from each square?",
+  "note": "The mazes are made up: the cheese is worth +10, the cat −10, and every step costs 1.",
+  "mazes": [
+    {
+      "columns": 6,
+      "rows": 5,
+      "start": 24,
+      "goal": 5,
+      "walls": [
+        3,
+        7,
+        9,
+        13,
+        26
+      ],
+      "cats": [
+        16
+      ]
+    },
+    {
+      "columns": 6,
+      "rows": 5,
+      "start": 24,
+      "goal": 5,
+      "walls": [
+        7,
+        8,
+        10,
+        19,
+        21,
+        22
+      ],
+      "cats": [
+        2,
+        20
+      ]
+    },
+    {
+      "columns": 6,
+      "rows": 5,
+      "start": 24,
+      "goal": 5,
+      "walls": [
+        7,
+        8,
+        9,
+        17,
+        18,
+        20,
+        21
+      ],
+      "cats": [
+        10,
+        27
+      ]
+    },
+    {
+      "columns": 6,
+      "rows": 5,
+      "start": 0,
+      "goal": 5,
+      "walls": [
+        2,
+        7,
+        8,
+        10,
+        19,
+        21,
+        23
+      ],
+      "cats": [
+        15
+      ]
+    }
+  ],
+  "rewards": {
+    "step": -1,
+    "goal": 10,
+    "cat": -10
+  },
+  "maxEpisodeSteps": 100,
+  "seed": 7,
+  "episodes": {
+    "min": 0,
+    "max": 200,
+    "step": 1,
+    "initial": 15
+  },
+  "alpha": {
+    "min": 0.05,
+    "max": 1,
+    "step": 0.05,
+    "initial": 0.5
+  },
+  "gamma": {
+    "min": 0.5,
+    "max": 0.99,
+    "step": 0.01,
+    "initial": 0.9
+  },
+  "epsilon": {
+    "min": 0,
+    "max": 0.5,
+    "step": 0.05,
+    "initial": 0.1
+  }
+}

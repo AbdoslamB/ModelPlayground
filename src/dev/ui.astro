@@ -1,0 +1,157 @@
+---
+// Component gallery, injected at /dev/ui/ by astro.config.mjs in dev only.
+import AppShell from '../layouts/AppShell.astro';
+import MetricCard from '../ui/MetricCard.svelte';
+
+const surfaces = [
+  'bg',
+  'surface',
+  'surface-sunken',
+  'hairline',
+  'control-edge',
+  'highlight',
+];
+const roles = ['data', 'line', 'best', 'error', 'a', 'b'];
+const inks = [
+  'text',
+  'muted',
+  'line-ink',
+  'best-ink',
+  'error-ink',
+  'a-ink',
+  'b-ink',
+];
+const meters = [
+  { label: 'Best possible', position: 0, value: '5.1' },
+  { label: 'Very close', position: 0.08, value: '5.3' },
+  { label: 'Getting closer', position: 0.3, value: '6.4' },
+  { label: 'Far off', position: 0.72, value: '12.8' },
+  { label: 'Far off', position: 1, value: '30.2', offScale: true },
+];
+---
+
+<AppShell
+  title="Component gallery"
+  description="Every shared component in every state."
+  noindex
+>
+  <div class="gallery">
+    <h1>Component gallery</h1>
+    <p>Development only. Switch the theme in the sidebar to check both.</p>
+
+    <h2>Surfaces</h2>
+    <ul class="swatches">
+      {surfaces.map((name) => (
+        <li>
+          <span class="swatch" style={`background: var(--c-${name})`}></span>
+          <code>--c-{name}</code>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Chart roles (marks)</h2>
+    <ul class="swatches">
+      {roles.map((name) => (
+        <li>
+          <span class="swatch" style={`background: var(--c-${name})`}></span>
+          <code>--c-{name}</code>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Text</h2>
+    <ul class="inks">
+      {inks.map((name) => (
+        <li style={`color: var(--c-${name})`}>
+          The typical miss is 5.9 minutes <code>--c-{name}</code>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Buttons</h2>
+    <div class="row">
+      <button class="button button--primary" type="button">
+        Primary
+      </button>
+      <button class="button" type="button">
+        Default
+      </button>
+      <button class="button button--quiet" type="button">
+        Quiet
+      </button>
+      <button class="button" type="button" disabled>
+        Disabled
+      </button>
+    </div>
+
+    <h2>Error meter</h2>
+    <div class="meters lab">
+      {meters.map((m) => (
+        <MetricCard
+          title="Typical miss"
+          value={m.value}
+          unit="min"
+          detail="MSE 26.0 min²"
+          position={m.position}
+          label={m.label}
+          offScale={m.offScale ?? false}
+          best={m.label === 'Best possible'}
+        />
+      ))}
+    </div>
+  </div>
+</AppShell>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: var(--s-4);
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: var(--s-8) var(--s-6);
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--s-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .swatches li {
+    display: flex;
+    gap: var(--s-2);
+    align-items: center;
+  }
+
+  .swatch {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--radius-control);
+  }
+
+  .inks {
+    display: grid;
+    gap: var(--s-1);
+    padding: var(--s-4);
+    border-radius: var(--radius-card);
+    background: var(--c-surface);
+    list-style: none;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .meters {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--s-3);
+    container: lab / inline-size;
+  }
+</style>

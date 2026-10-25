@@ -1,0 +1,76 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// the finished map of the first set, each point drawn as its picture.
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { advance, jointP, squaredDistances, startRun } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('t-SNE has no data');
+const P = jointP(
+  squaredDistances(rows.map((r) => r.pixels)),
+  dataset.perplexity.initial,
+);
+const { Y } = advance(
+  startRun(rows.map((r) => r.start)),
+  P,
+  dataset.schedule,
+  dataset.steps.initial,
+);
+const width = 320;
+const height = 200;
+const thumb = 16;
+const xs = Y.map((p) => p[0]);
+const ys = Y.map((p) => p[1]);
+const x = scaleLinear([Math.min(...xs), Math.max(...xs)], [20, width - 20]);
+const y = scaleLinear([Math.min(...ys), Math.max(...ys)], [height - 20, 20]);
+const colours = ['--c-class-1', '--c-class-2', '--c-class-3', '--c-class-4'];
+const kinds = dataset.kinds.map((k) => k.id);
+const cell = thumb / dataset.size;
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="Tiny pictures arranged on a map, with similar pictures grouped together"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {rows.map((row, i) => {
+    const [px = 0, py = 0] = Y[i] ?? [];
+    const left = x(px) - thumb / 2;
+    const top = y(py) - thumb / 2;
+    return (
+      <g transform={`translate(${left} ${top})`}>
+        <rect width={thumb} height={thumb} fill="var(--c-surface)" />
+        {row.pixels.map((value, p) =>
+          value > 0 ? (
+            <rect
+              x={(p % dataset.size) * cell}
+              y={Math.floor(p / dataset.size) * cell}
+              width={cell}
+              height={cell}
+              fill="var(--c-text)"
+              opacity={value / 16}
+            />
+          ) : null,
+        )}
+        <rect
+          width={thumb}
+          height={thumb}
+          fill="none"
+          stroke={`var(${colours[kinds.indexOf(row.kind)] ?? '--c-text'})`}
+          stroke-width="1.5"
+        />
+      </g>
+    );
+  })}
+</svg>

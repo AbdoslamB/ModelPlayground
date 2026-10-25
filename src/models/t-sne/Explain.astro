@@ -1,0 +1,197 @@
+---
+// The explanation below the Lab: the pictures, the symbols, how t-SNE draws
+// its map, perplexity, how to read the map, and the model in short. Static
+// HTML; formulas are rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="tsne-data">
+    <h2 id="tsne-data">What you are looking at</h2>
+    <p>
+      Each square on the map is a tiny picture, 8 by 8 pixels. To the computer,
+      a picture is just 64 numbers: how dark each pixel is. There are four kinds
+      of shape (a bar across, a bar down, a slash and a backslash), drawn at
+      slightly different places, with a few smudges.
+    </p>
+    <p>
+      64 numbers cannot be drawn on a flat page. t-SNE draws a map instead: it
+      places the pictures so that pictures with similar pixels end up close
+      together. It is never told the kinds; the coloured frames are only there
+      for you to check its work. The pictures are made up, and{' '}
+      <strong>Refresh Data</strong> shows another set.
+    </p>
+  </section>
+
+  <section aria-labelledby="tsne-symbols">
+    <h2 id="tsne-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>xᵢ</dt>
+        <dd>Picture i as its 64 pixel numbers.</dd>
+      </div>
+      <div>
+        <dt>yᵢ</dt>
+        <dd>Where picture i sits on the map.</dd>
+      </div>
+      <div>
+        <dt>pᵢⱼ</dt>
+        <dd>How close pictures i and j are in pixels, as a probability.</dd>
+      </div>
+      <div>
+        <dt>qᵢⱼ</dt>
+        <dd>How close they are on the map, measured the same way.</dd>
+      </div>
+      <div>
+        <dt>σᵢ</dt>
+        <dd>The width of picture i's neighbourhood in pixels.</dd>
+      </div>
+      <div>
+        <dt class="sym-a">u</dt>
+        <dd>
+          The perplexity: roughly how many neighbours each picture pays
+          attention to.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-line">t</dt>
+        <dd>How many steps the map has moved so far.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="tsne-how">
+    <h2 id="tsne-how">How t-SNE draws its map</h2>
+    <ol class="steps">
+      <li>
+        <strong>Measure closeness in the pictures.</strong> For each picture,
+        put a bell curve over the pixel distances to all the others. Near
+        pictures get a high probability, far ones almost none. Each curve's
+        width σᵢ is chosen so that it covers about u neighbours.
+        <div class="formula" set:html={tex.p} />
+      </li>
+      <li>
+        <strong>Measure closeness on the map</strong> in the same way, but with
+        a curve that has longer tails. That gives far-apart groups room to
+        spread out instead of piling up in the middle.
+        <div class="formula" set:html={tex.q} />
+      </li>
+      <li>
+        <strong>Move the map</strong> a little at a time to make the two match.
+        The mismatch is measured by the KL cost; each step moves every picture
+        downhill on it. Pairs that should be close pull together; pairs that
+        should be apart push away.
+        <div class="formula" set:html={tex.cost} />
+      </li>
+    </ol>
+    <p>
+      The map starts as a tiny random cloud. For the first 250 steps the pulls
+      are made 12 times stronger, so groups form early and can then settle into
+      place.
+    </p>
+  </section>
+
+  <section aria-labelledby="tsne-perplexity">
+    <h2 id="tsne-perplexity">Perplexity</h2>
+    <p>
+      With a small perplexity, each picture cares only about its very nearest
+      few, so the map shows small, tight clumps, sometimes splitting a kind into
+      pieces. With a larger perplexity, each picture looks further, and the map
+      shows the bigger groups more clearly. Typical values are between 5 and 50;
+      it can never be more than the number of other pictures.
+    </p>
+  </section>
+
+  <section aria-labelledby="tsne-read">
+    <h2 id="tsne-read">How to read the map</h2>
+    <p>
+      Closeness on the map is meaningful: near pictures are similar. But sizes
+      and gaps are not. A tight group is not necessarily more alike than a loose
+      one, and the distance between two groups says little about how different
+      they are. The map also has no up or down: run it again and the groups may
+      come out turned or mirrored.
+    </p>
+    <p>
+      The score <strong>Neighbours kept</strong> checks the map honestly: for
+      each picture, how many of its 5 nearest pictures in pixels are also among
+      its 5 nearest on the map.
+    </p>
+  </section>
+
+  <section aria-labelledby="tsne-summary">
+    <h2 id="tsne-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Measure</strong> how close every pair is in the data.
+      </li>
+      <li>
+        <strong>Start</strong> with a tiny random map.
+      </li>
+      <li>
+        <strong>Move</strong> the map step by step until closeness on the map
+        matches closeness in the data.
+      </li>
+      <li>
+        <strong>Read</strong> who is near whom, not the sizes or the gaps.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

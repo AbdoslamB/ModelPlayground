@@ -1,0 +1,201 @@
+---
+// The explanation below the Lab: the data, the symbols, how an SVM finds its
+// border, C, curved borders and γ, and the model in short. Static HTML;
+// formulas are rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="svm-data">
+    <h2 id="svm-data">What you are looking at</h2>
+    <p>
+      Each shape is a student. Across the graph is how many hours they studied
+      before a test; up the graph is how many hours they slept. Circles passed
+      and triangles failed. Studying and sleep both help, so the border between
+      them runs on a slant, and a few students break the rule.
+    </p>
+    <p>
+      The solid line is the border the model draws. The dashed lines on either
+      side are the edges of its margin, like the kerbs of a street. Students
+      with a ring are the support vectors. The numbers are made up, and{' '}
+      <strong>Refresh Data</strong> shows another class.
+    </p>
+  </section>
+
+  <section aria-labelledby="svm-symbols">
+    <h2 id="svm-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>x</dt>
+        <dd>A student: hours studied and hours slept.</dd>
+      </div>
+      <div>
+        <dt>y</dt>
+        <dd>+1 for passed, −1 for failed.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">f(x)</dt>
+        <dd>
+          The model's score. Above 0: pass. Below 0: fail. Exactly ±1 on the
+          dashed lines.
+        </dd>
+      </div>
+      <div>
+        <dt>w, b</dt>
+        <dd>
+          For a straight border, the weights of the two features and the
+          intercept.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-error">ξ</dt>
+        <dd>
+          Slack: how far a student is past their own dashed line. 0 for students
+          safely on their side.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-a">C</dt>
+        <dd>How much each bit of slack costs.</dd>
+      </div>
+      <div>
+        <dt class="sym-b">γ</dt>
+        <dd>For a curved border: how far each student's pull reaches.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="svm-how">
+    <h2 id="svm-how">How the model finds its border</h2>
+    <p>
+      Many straight lines could separate the two groups. A support vector
+      machine picks the one with the widest street: the line that stays as far
+      as possible from the nearest students on both sides.
+    </p>
+    <div class="formula" set:html={tex.linear} />
+    <p>
+      The street's edges are where f(x) = +1 and −1, so its width is 2 ÷ ‖w‖. A
+      wide street means a small w.
+    </p>
+    <div class="formula" set:html={tex.margin} />
+    <p>
+      Only the students on or inside the street decide where it goes: these are
+      the <strong>support vectors</strong>. Drag a student far from the border
+      and nothing moves. Drag a support vector and the whole street shifts.
+    </p>
+  </section>
+
+  <section aria-labelledby="svm-c">
+    <h2 id="svm-c">C: a wide street, or few mistakes?</h2>
+    <p>
+      When the groups overlap, no street is empty. The model lets some students
+      stand inside it, or even on the wrong side, and charges C for each unit of
+      slack. It then makes the total as small as it can:
+    </p>
+    <div class="formula" set:html={tex.objective} />
+    <p>
+      A <strong>small C</strong> makes slack cheap: the street gets wide and
+      many students lean on it, so the border depends on many of them and stays
+      calm. A<strong>large C</strong> makes slack expensive: the street narrows
+      to squeeze students out of it, and a single odd student can swing the
+      border.
+    </p>
+  </section>
+
+  <section aria-labelledby="svm-curved">
+    <h2 id="svm-curved">Curved borders and γ</h2>
+    <p>
+      Turn on <strong>Curved</strong> and the border may bend. Instead of a
+      straight line, each support vector pulls the score towards its own side,
+      strongly when it is close and weakly when it is far:
+    </p>
+    <div class="formula" set:html={tex.rbf} />
+    <p>
+      γ sets how far that pull reaches. A small γ gives each student a wide
+      reach, so the border stays smooth and close to straight. A large γ gives
+      each student a tiny reach, so the border wraps around single students and
+      makes small islands. That fits these students but would guess badly for
+      new ones.
+    </p>
+  </section>
+
+  <section aria-labelledby="svm-summary">
+    <h2 id="svm-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Draw</strong> the border with the widest street between the
+        groups.
+      </li>
+      <li>
+        <strong>Allow slack</strong> for students inside the street, at a price
+        C.
+      </li>
+      <li>
+        <strong>Keep</strong> only the support vectors: they alone hold the
+        street in place.
+      </li>
+      <li>
+        <strong>Bend</strong> the border with a curved kernel when a straight
+        one cannot fit, and use γ to keep it from bending too much.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

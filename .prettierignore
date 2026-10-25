@@ -1,0 +1,9 @@
+dist
+.astro
+.pydeps
+python/raw
+src/models/*/data/*.json
+tests/fixtures
+public/data
+package-lock.json
+*.docx

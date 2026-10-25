@@ -1,0 +1,174 @@
+---
+// The explanation below the Lab: the data, the symbols, how k-Means works,
+// choosing k and starting points, and the model in short. Static HTML;
+// formulas are rendered by KaTeX at build time.
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="kmeans-data">
+    <h2 id="kmeans-data">What you are looking at</h2>
+    <p>
+      The graph is a map of a park, 100 metres on each side. Each shape is a
+      person. The lettered rings are ice-cream stands, and everyone walks to the
+      stand nearest to them. Their colour and shape show which one.
+    </p>
+    <p>
+      Nobody told the model which group anyone belongs to: there are no labels.
+      k-Means finds the groups on its own. The numbers are made up, and{' '}
+      <strong>Refresh Data</strong> shows another day in the park.
+    </p>
+  </section>
+
+  <section aria-labelledby="kmeans-symbols">
+    <h2 id="kmeans-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>xᵢ</dt>
+        <dd>Where person i is standing.</dd>
+      </div>
+      <div>
+        <dt>μⱼ</dt>
+        <dd>Where stand j is. (μ is the Greek letter "mu".)</dd>
+      </div>
+      <div>
+        <dt>cᵢ</dt>
+        <dd>The stand person i walks to: the nearest one.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">k</dt>
+        <dd>How many stands, so how many groups.</dd>
+      </div>
+      <div>
+        <dt class="sym-error">J</dt>
+        <dd>
+          Every walk, squared, added together. Smaller is better. The typical
+          walk, √(J ÷ n), turns it back into metres.
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="kmeans-how">
+    <h2 id="kmeans-how">How k-Means works</h2>
+    <p>Start with k stands anywhere. Then repeat two moves:</p>
+    <ol class="steps">
+      <li>
+        <strong>Group:</strong> every person goes to their nearest stand.
+        <div class="formula" set:html={tex.assign} />
+      </li>
+      <li>
+        <strong>Move:</strong> every stand moves to the middle of its people,
+        the average of their positions. The dashed arrows show where each stand
+        will go.
+        <div class="formula" set:html={tex.update} />
+      </li>
+    </ol>
+    <p>
+      Moving a stand to the middle of its group always shortens that group's
+      walks, and regrouping never makes anyone walk further. So the total J
+      shrinks with every step, until nothing changes: the stands have settled.
+    </p>
+    <div class="formula" set:html={tex.objective} />
+    <p>
+      Press <strong>Step</strong> to watch one move at a time, or{' '}
+      <strong>Run</strong> to let it finish. Drag a stand anywhere, and the
+      groups change at once.
+    </p>
+  </section>
+
+  <section aria-labelledby="kmeans-k">
+    <h2 id="kmeans-k">Choosing k, and where to start</h2>
+    <p>
+      More stands always mean shorter walks, so J alone cannot pick k: with one
+      stand per person, nobody walks at all. Look instead for the k where adding
+      a stand stops helping much. Here the park has three busy spots, so the
+      typical walk drops a lot from 2 to 3 stands, and only a little from 3 to
+      4.
+    </p>
+    <p>
+      Where the stands start matters too. k-Means only ever improves the stands
+      it has, so a bad start can settle on a poor answer, for example one stand
+      stuck between two groups. Drag the stands somewhere new and run it again
+      to see a different result. In practice, k-Means is run from several starts
+      and the run with the smallest J is kept.
+    </p>
+  </section>
+
+  <section aria-labelledby="kmeans-summary">
+    <h2 id="kmeans-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Choose k</strong> and place k stands.
+      </li>
+      <li>
+        <strong>Group</strong> every point with its nearest stand.
+      </li>
+      <li>
+        <strong>Move</strong> every stand to the middle of its group.
+      </li>
+      <li>
+        <strong>Repeat</strong> until nothing moves: J is then as small as these
+        starting stands allow.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

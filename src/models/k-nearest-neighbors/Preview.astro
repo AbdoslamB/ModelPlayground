@@ -1,0 +1,59 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript).
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { rankByDistance } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('k-Nearest Neighbors has no data');
+const width = 320;
+const height = 200;
+const x = scaleLinear(dataset.axes.x, [60, 260]);
+const y = scaleLinear(dataset.axes.y, [190, -10]);
+const query = dataset.start;
+const voters = rankByDistance(rows, query).slice(0, dataset.startK);
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="Fruits on a graph, with lines from a new fruit to its three nearest neighbours"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {voters.map((v) => (
+    <line
+      x1={x(query.x)}
+      y1={y(query.y)}
+      x2={x(v.row.x)}
+      y2={y(v.row.y)}
+      stroke="var(--c-text)"
+      stroke-opacity="0.5"
+      stroke-width="1.5"
+    />
+  ))}
+  {rows.map((row) =>
+    row.label === 'apple' ? (
+      <circle cx={x(row.x)} cy={y(row.y)} r="5" fill="var(--c-class-1)" />
+    ) : (
+      <path
+        d={`M${x(row.x)},${y(row.y) - 6} l5.5,9.5 h-11 z`}
+        fill="var(--c-class-2)"
+      />
+    ),
+  )}
+  <path
+    d={`M${x(query.x)},${y(query.y) - 8} l8,8 -8,8 -8,-8 z`}
+    fill="var(--c-surface)"
+    stroke="var(--c-text)"
+    stroke-width="2"
+  ></path>
+</svg>

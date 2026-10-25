@@ -1,0 +1,45 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript).
+import { scaleLinear } from '../../lib/scales';
+import { datasets } from './data';
+import { run } from './math';
+
+const dataset = datasets[0];
+const rows = dataset?.batches[0];
+if (!dataset || !rows) throw new Error('k-Means has no data');
+const width = 320;
+const height = 200;
+const x = scaleLinear(dataset.axes.x, [60, 260]);
+const y = scaleLinear(dataset.axes.y, [195, -5]);
+const { centres, labels } = run(rows, dataset.starts.slice(0, dataset.startK));
+const colours = ['var(--c-class-1)', 'var(--c-class-2)', 'var(--c-class-3)'];
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="People in three groups, each around a stand"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {rows.map((row, i) => (
+    <circle cx={x(row.x)} cy={y(row.y)} r="4" fill={colours[labels[i] ?? 0]} />
+  ))}
+  {centres.map((c, i) => (
+    <circle
+      cx={x(c.x)}
+      cy={y(c.y)}
+      r="8"
+      fill="var(--c-surface)"
+      stroke={colours[i]}
+      stroke-width="3"
+    />
+  ))}
+</svg>

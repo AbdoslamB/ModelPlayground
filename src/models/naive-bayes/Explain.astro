@@ -1,0 +1,246 @@
+---
+// The explanation below the Lab: the data, the symbols, how Naive Bayes
+// decides, smoothing, the training messages, and the model in short. Static
+// HTML; formulas are rendered by KaTeX at build time.
+import type { Dataset } from './data';
+
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+interface Props {
+  dataset: Dataset;
+}
+
+const { dataset } = Astro.props;
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+const spam = dataset.training.filter((m) => m.label === 'spam');
+const normal = dataset.training.filter((m) => m.label === 'normal');
+---
+
+<div class="explain">
+  <section aria-labelledby="nb-data">
+    <h2 id="nb-data">What you are looking at</h2>
+    <p>
+      The model has read {dataset.training.length} short messages that someone
+      already sorted: {spam.length} spam and {normal.length} normal. From them
+      it learned how often each word turns up in each kind of message. Now it
+      reads a new message and weighs every word.
+    </p>
+    <p>
+      Each bar is one word of the message. A bar to the right means the word is
+      more common in spam; to the left, more common in normal messages. The
+      longer the bar, the stronger the evidence. A word the model never saw
+      gives no evidence at all, so it is ignored. The messages are made up, in
+      simple words, so every count is easy to check.
+    </p>
+  </section>
+
+  <section aria-labelledby="nb-symbols">
+    <h2 id="nb-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>w</dt>
+        <dd>One word of the message.</dd>
+      </div>
+      <div>
+        <dt>P(w | spam)</dt>
+        <dd>
+          How likely a spam message is to use the word w. Read the bar "|" as
+          "given".
+        </dd>
+      </div>
+      <div>
+        <dt>P(spam)</dt>
+        <dd>
+          How common spam is before reading anything: here {spam.length} of{' '}
+          {dataset.training.length} messages.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-line">L</dt>
+        <dd>
+          The total evidence. Above zero points to spam; below zero, to normal.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-a">α</dt>
+        <dd>Smoothing: a small extra count given to every word.</dd>
+      </div>
+      <div>
+        <dt>V</dt>
+        <dd>The number of different words seen in training.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="nb-how">
+    <h2 id="nb-how">How the model decides</h2>
+    <ol class="steps">
+      <li>
+        <strong>Start</strong> from how common each kind is. Most messages here
+        are normal, so before reading a single word the model leans a little
+        towards normal. That is the first bar.
+      </li>
+      <li>
+        <strong>Weigh each word</strong> by comparing how likely it is in spam
+        and in normal messages. "Free" turns up in many spam messages and in no
+        normal ones, so it points strongly to spam.
+        <div class="formula" set:html={tex.word} />
+      </li>
+      <li>
+        <strong>Add up</strong> the evidence. Taking the log of each ratio turns
+        multiplying chances into adding bars, which is easier to see and to
+        compute.
+        <div class="formula" set:html={tex.odds} />
+      </li>
+      <li>
+        <strong>Turn the total into a chance</strong> between 0% and 100%. A
+        total of zero means 50%: the words balance out.
+        <div class="formula" set:html={tex.chance} />
+      </li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="nb-naive">
+    <h2 id="nb-naive">Why "naive"?</h2>
+    <p>
+      The model treats every word as separate evidence, as if words never went
+      together. It ignores order, too: "money free win" scores the same as "win
+      free money". Real language is not like that, so the assumption is naive.
+      Even so, the model is fast, needs very little data, and works well for
+      sorting messages.
+    </p>
+    <p>
+      Switching a word off shows how much the answer rests on it. It is the same
+      as deleting the word from the message.
+    </p>
+  </section>
+
+  <section aria-labelledby="nb-alpha">
+    <h2 id="nb-alpha">Smoothing, α</h2>
+    <p>
+      Without smoothing, a word never seen in normal messages would have a
+      chance of exactly zero there. One such word would then make a message
+      certain spam, however normal the rest looks. Smoothing adds α to every
+      count, as if each word had been seen a little in both kinds.
+    </p>
+    <p>
+      A small α trusts the counts: rare words give strong evidence. A large α
+      pulls every word's chance towards the same value, so the bars shrink and
+      the answer moves back towards where the model started.
+    </p>
+  </section>
+
+  <section aria-labelledby="nb-training">
+    <h2 id="nb-training">The messages it learned from</h2>
+    <div class="training">
+      <div>
+        <h3 class="sym-class-1">Spam</h3>
+        <ul>
+          {spam.map((m) => (
+            <li>{m.text}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="sym-class-2">Normal</h3>
+        <ul>
+          {normal.map((m) => (
+            <li>{m.text}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="nb-summary">
+    <h2 id="nb-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Count</strong> every word in messages that are already sorted.
+      </li>
+      <li>
+        <strong>Smooth</strong> the counts, so no word is ever impossible.
+      </li>
+      <li>
+        <strong>Weigh</strong> each word of a new message: is it likelier in
+        spam or in normal messages?
+      </li>
+      <li>
+        <strong>Add</strong> the evidence to the starting point, and turn the
+        total into a chance.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  h3 {
+    font-size: var(--fs-18);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+
+  .training {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--s-6);
+  }
+
+  .training ul {
+    margin: var(--s-2) 0 0;
+    padding-inline-start: 1.2em;
+    line-height: 1.6;
+  }
+</style>

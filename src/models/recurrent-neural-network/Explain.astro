@@ -1,0 +1,201 @@
+---
+// The explanation below the Lab: the text, the symbols, how the network
+// reads, memory, temperature, how it learned, and the model in short.
+// Static HTML; formulas are rendered by KaTeX at build time.
+import type { Dataset } from './data';
+
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+interface Props {
+  dataset: Dataset;
+}
+
+const { dataset } = Astro.props;
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+const { subjects, verbs, objects } = dataset.words;
+const sentence = `${subjects[0] ?? ''} ${verbs[0] ?? ''} ${objects[0] ?? ''}.`;
+---
+
+<div class="explain">
+  <section aria-labelledby="rnn-data">
+    <h2 id="rnn-data">What you are looking at</h2>
+    <p>
+      A small neural network has read many short, made-up sentences, one
+      character at a time, and learned to guess the next character. Each
+      sentence is someone, doing something, somewhere: “{sentence}”
+    </p>
+    <p>
+      Each column is one step: the character the network has just read, and
+      under it the network's memory after reading it, {dataset.hidden} numbers
+      between −1 and 1. The bars show its guesses for the next character after
+      the selected step.
+    </p>
+  </section>
+
+  <section aria-labelledby="rnn-symbols">
+    <h2 id="rnn-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>xₜ</dt>
+        <dd>The character read at step t.</dd>
+      </div>
+      <div>
+        <dt>hₜ</dt>
+        <dd>The memory (hidden state) after step t.</dd>
+      </div>
+      <div>
+        <dt>Wₓ, Wₕ, W_y</dt>
+        <dd>
+          The weights the network learned: how a character, the old memory and
+          the memory feed into the next step.
+        </dd>
+      </div>
+      <div>
+        <dt>zₜ</dt>
+        <dd>One score for every possible next character.</dd>
+      </div>
+      <div>
+        <dt class="sym-line">T</dt>
+        <dd>The temperature: how bold or cautious the guesses are.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="rnn-how">
+    <h2 id="rnn-how">How the network reads</h2>
+    <p>
+      At every step, the network takes the new character and its memory of
+      everything before, mixes them with its weights, and squeezes the result
+      between −1 and 1. That is its new memory. From the memory, it scores every
+      possible next character.
+    </p>
+    <div class="formula" set:html={tex.step} />
+    <p>
+      The same weights are used at every step: the network is one small machine
+      run over and over, passing its memory along. That loop is what makes it
+      recurrent.
+    </p>
+  </section>
+
+  <section aria-labelledby="rnn-memory">
+    <h2 id="rnn-memory">Memory</h2>
+    <p>
+      After “the c”, the network guesses “a”, because “cat” is the only word
+      here starting with c after “the”. To know that, it must remember the “the”
+      it read a few steps ago. Watch the memory strips: some numbers flip when a
+      word ends, others hold steady across a word. Nobody told the network what
+      to remember; it found out while learning.
+    </p>
+    <p>
+      Its memory is short, though. A plain network like this one forgets
+      quickly, so it cannot keep track of a whole page. Bigger models add gates
+      that decide what to keep and what to forget.
+    </p>
+  </section>
+
+  <section aria-labelledby="rnn-temperature">
+    <h2 id="rnn-temperature">Temperature, and surprise</h2>
+    <p>
+      The scores become chances with softmax. Dividing the scores by the
+      temperature T first changes how bold the network is: a low T makes the top
+      guess even more likely, a high T spreads the chances out. Press{' '}
+      <strong>Write</strong> at different temperatures: low ones repeat safe
+      words, high ones invent strange ones.
+    </p>
+    <div class="formula" set:html={tex.softmax} />
+    <p>
+      Surprise measures how well the network predicted what really came next.
+      Averaged over the text, it is lower the better the network knows this kind
+      of sentence. Type something unusual and watch it rise.
+    </p>
+    <div class="formula" set:html={tex.surprise} />
+  </section>
+
+  <section aria-labelledby="rnn-learn">
+    <h2 id="rnn-learn">How it learned</h2>
+    <p>
+      The weights started as small random numbers. The network read the training
+      sentences, and after every 40 characters it measured its total surprise
+      and nudged every weight a little to lower it, working back through the
+      steps (backpropagation through time). After a few thousand rounds, it
+      guesses most characters well. The sentences used these words:{' '}
+      {subjects.join(', ')}; {verbs.join(', ')}; {objects.join(', ')}.
+    </p>
+  </section>
+
+  <section aria-labelledby="rnn-summary">
+    <h2 id="rnn-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Read</strong> one character at a time.
+      </li>
+      <li>
+        <strong>Remember:</strong> mix the character into the memory, using the
+        same weights at every step.
+      </li>
+      <li>
+        <strong>Guess</strong> the next character from the memory, as chances.
+      </li>
+      <li>
+        <strong>Learn</strong> by nudging the weights to make the real next
+        character less surprising.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

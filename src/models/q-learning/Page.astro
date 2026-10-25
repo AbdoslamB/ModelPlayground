@@ -1,0 +1,25 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const update = equations.find((e) => e.id === 'update');
+const formula = update ? renderTex(update.tex) : '';
+const dataset = datasets[0];
+if (!dataset) throw new Error('Q-Learning has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Press Play, or slide through the episodes. The mouse learns from rewards
+    alone which way to go from every square.
+  </p>
+  <Lab slot="lab" client:load dataset={dataset} formula={formula} />
+  <Explain slot="explain" />
+</ModelLayout>

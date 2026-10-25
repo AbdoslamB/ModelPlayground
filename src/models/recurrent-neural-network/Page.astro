@@ -1,0 +1,25 @@
+---
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { meta } from './meta';
+
+const step = equations.find((e) => e.id === 'step');
+const formula = step ? renderTex(step.tex) : '';
+const dataset = datasets[0];
+if (!dataset) throw new Error('Recurrent Neural Network has no data');
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    Type a sentence, or press Write to let the network add a letter. It reads
+    one character at a time and guesses the next.
+  </p>
+  <Lab slot="lab" client:load dataset={dataset} formula={formula} />
+  <Explain slot="explain" dataset={dataset} />
+</ModelLayout>

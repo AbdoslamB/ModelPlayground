@@ -1,0 +1,61 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// the first sentence unrolled, with each step's memory as a heat strip.
+import { datasets } from './data';
+import { encode, run } from './math';
+
+const dataset = datasets[0];
+const text = dataset?.examples[0];
+if (!dataset || text === undefined) throw new Error('RNN has no data');
+const steps = run(
+  dataset.weights,
+  dataset.alphabet,
+  encode(text, dataset.alphabet).indexes,
+).slice(0, 14);
+const width = 320;
+const height = 200;
+const column = 20;
+const left = (width - steps.length * column) / 2;
+const cellH = 6;
+const heat = (v: number) =>
+  `color-mix(in srgb, var(${v > 0 ? '--c-class-3' : '--c-class-1'}) ${Math.round(Math.min(1, Math.abs(v)) * 80)}%, var(--c-surface))`;
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="A sentence read one character at a time, with the network's memory under each character"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {steps.map((s, t) => (
+    <g transform={`translate(${left + t * column} 20)`}>
+      <text
+        x={column / 2}
+        y="14"
+        text-anchor="middle"
+        fill="var(--c-text)"
+        font-size="14"
+        font-weight="600"
+      >
+        {s.char === ' ' ? '␣' : s.char}
+      </text>
+      {s.hidden.map((v, k) => (
+        <rect
+          x="2"
+          y={24 + k * cellH}
+          width={column - 4}
+          height={cellH}
+          fill={heat(v)}
+        />
+      ))}
+    </g>
+  ))}
+</svg>

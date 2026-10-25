@@ -1,0 +1,794 @@
+{
+  "id": "students",
+  "title": "Students and a test",
+  "question": "Will this student pass?",
+  "note": "The students are made up: studying and sleep both help, and a few students near the border break the rule.",
+  "columns": [
+    {
+      "key": "x",
+      "label": "Hours studied",
+      "short": "Studied",
+      "unit": "h",
+      "role": "x",
+      "decimals": 1
+    },
+    {
+      "key": "y",
+      "label": "Hours slept",
+      "short": "Slept",
+      "unit": "h",
+      "role": "y",
+      "decimals": 1
+    }
+  ],
+  "classes": [
+    {
+      "id": "fail",
+      "name": "failed",
+      "short": "fail",
+      "shape": "triangle",
+      "sign": -1
+    },
+    {
+      "id": "pass",
+      "name": "passed",
+      "short": "pass",
+      "shape": "circle",
+      "sign": 1
+    }
+  ],
+  "axes": {
+    "x": [
+      0,
+      10
+    ],
+    "y": [
+      0,
+      10
+    ]
+  },
+  "logC": {
+    "min": -2,
+    "max": 2,
+    "step": 0.25,
+    "initial": 0
+  },
+  "logGamma": {
+    "min": -1.5,
+    "max": 1,
+    "step": 0.25,
+    "initial": -0.5
+  },
+  "batches": [
+    [
+      {
+        "id": 1,
+        "x": 3.2,
+        "y": 3.2,
+        "label": "fail"
+      },
+      {
+        "id": 2,
+        "x": 8.9,
+        "y": 8.3,
+        "label": "pass"
+      },
+      {
+        "id": 3,
+        "x": 2.1,
+        "y": 2.7,
+        "label": "fail"
+      },
+      {
+        "id": 4,
+        "x": 9.2,
+        "y": 4.9,
+        "label": "pass"
+      },
+      {
+        "id": 5,
+        "x": 6.2,
+        "y": 3.2,
+        "label": "fail"
+      },
+      {
+        "id": 6,
+        "x": 2.8,
+        "y": 6.5,
+        "label": "fail"
+      },
+      {
+        "id": 7,
+        "x": 2.9,
+        "y": 5.7,
+        "label": "fail"
+      },
+      {
+        "id": 8,
+        "x": 0.8,
+        "y": 7.3,
+        "label": "fail"
+      },
+      {
+        "id": 9,
+        "x": 6.7,
+        "y": 7.4,
+        "label": "pass"
+      },
+      {
+        "id": 10,
+        "x": 8.3,
+        "y": 5.1,
+        "label": "pass"
+      },
+      {
+        "id": 11,
+        "x": 0.7,
+        "y": 6.2,
+        "label": "fail"
+      },
+      {
+        "id": 12,
+        "x": 8.4,
+        "y": 3.9,
+        "label": "pass"
+      },
+      {
+        "id": 13,
+        "x": 2.3,
+        "y": 9.2,
+        "label": "fail"
+      },
+      {
+        "id": 14,
+        "x": 7.7,
+        "y": 6.8,
+        "label": "pass"
+      },
+      {
+        "id": 15,
+        "x": 1.3,
+        "y": 5.6,
+        "label": "fail"
+      },
+      {
+        "id": 16,
+        "x": 6.9,
+        "y": 9.5,
+        "label": "pass"
+      },
+      {
+        "id": 17,
+        "x": 7.1,
+        "y": 5.5,
+        "label": "pass"
+      },
+      {
+        "id": 18,
+        "x": 7.9,
+        "y": 5.8,
+        "label": "pass"
+      },
+      {
+        "id": 19,
+        "x": 6.1,
+        "y": 5.6,
+        "label": "fail"
+      },
+      {
+        "id": 20,
+        "x": 2.0,
+        "y": 5.6,
+        "label": "fail"
+      },
+      {
+        "id": 21,
+        "x": 5.5,
+        "y": 5.2,
+        "label": "pass"
+      },
+      {
+        "id": 22,
+        "x": 7.3,
+        "y": 3.0,
+        "label": "pass"
+      },
+      {
+        "id": 23,
+        "x": 6.2,
+        "y": 9.2,
+        "label": "pass"
+      },
+      {
+        "id": 24,
+        "x": 7.8,
+        "y": 7.6,
+        "label": "pass"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 5.2,
+        "y": 4.3,
+        "label": "fail"
+      },
+      {
+        "id": 2,
+        "x": 6.8,
+        "y": 5.7,
+        "label": "fail"
+      },
+      {
+        "id": 3,
+        "x": 6.9,
+        "y": 2.9,
+        "label": "fail"
+      },
+      {
+        "id": 4,
+        "x": 4.8,
+        "y": 8.7,
+        "label": "pass"
+      },
+      {
+        "id": 5,
+        "x": 6.6,
+        "y": 7.4,
+        "label": "pass"
+      },
+      {
+        "id": 6,
+        "x": 2.9,
+        "y": 7.1,
+        "label": "fail"
+      },
+      {
+        "id": 7,
+        "x": 8.3,
+        "y": 6.4,
+        "label": "pass"
+      },
+      {
+        "id": 8,
+        "x": 8.6,
+        "y": 2.9,
+        "label": "fail"
+      },
+      {
+        "id": 9,
+        "x": 1.3,
+        "y": 4.6,
+        "label": "fail"
+      },
+      {
+        "id": 10,
+        "x": 5.0,
+        "y": 9.4,
+        "label": "pass"
+      },
+      {
+        "id": 11,
+        "x": 1.4,
+        "y": 3.0,
+        "label": "fail"
+      },
+      {
+        "id": 12,
+        "x": 4.7,
+        "y": 7.8,
+        "label": "pass"
+      },
+      {
+        "id": 13,
+        "x": 0.8,
+        "y": 8.5,
+        "label": "fail"
+      },
+      {
+        "id": 14,
+        "x": 9.1,
+        "y": 7.1,
+        "label": "pass"
+      },
+      {
+        "id": 15,
+        "x": 6.7,
+        "y": 5.0,
+        "label": "fail"
+      },
+      {
+        "id": 16,
+        "x": 7.7,
+        "y": 9.2,
+        "label": "pass"
+      },
+      {
+        "id": 17,
+        "x": 8.5,
+        "y": 8.8,
+        "label": "pass"
+      },
+      {
+        "id": 18,
+        "x": 7.4,
+        "y": 3.5,
+        "label": "pass"
+      },
+      {
+        "id": 19,
+        "x": 5.7,
+        "y": 8.4,
+        "label": "pass"
+      },
+      {
+        "id": 20,
+        "x": 2.5,
+        "y": 8.9,
+        "label": "fail"
+      },
+      {
+        "id": 21,
+        "x": 5.1,
+        "y": 6.1,
+        "label": "fail"
+      },
+      {
+        "id": 22,
+        "x": 1.1,
+        "y": 3.7,
+        "label": "fail"
+      },
+      {
+        "id": 23,
+        "x": 7.1,
+        "y": 8.9,
+        "label": "pass"
+      },
+      {
+        "id": 24,
+        "x": 2.1,
+        "y": 5.6,
+        "label": "fail"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 3.5,
+        "y": 5.8,
+        "label": "fail"
+      },
+      {
+        "id": 2,
+        "x": 7.2,
+        "y": 8.9,
+        "label": "pass"
+      },
+      {
+        "id": 3,
+        "x": 1.7,
+        "y": 8.8,
+        "label": "fail"
+      },
+      {
+        "id": 4,
+        "x": 2.0,
+        "y": 4.3,
+        "label": "fail"
+      },
+      {
+        "id": 5,
+        "x": 3.8,
+        "y": 4.8,
+        "label": "fail"
+      },
+      {
+        "id": 6,
+        "x": 4.3,
+        "y": 2.5,
+        "label": "fail"
+      },
+      {
+        "id": 7,
+        "x": 6.7,
+        "y": 6.9,
+        "label": "pass"
+      },
+      {
+        "id": 8,
+        "x": 4.9,
+        "y": 8.9,
+        "label": "pass"
+      },
+      {
+        "id": 9,
+        "x": 4.3,
+        "y": 4.0,
+        "label": "fail"
+      },
+      {
+        "id": 10,
+        "x": 1.4,
+        "y": 6.0,
+        "label": "fail"
+      },
+      {
+        "id": 11,
+        "x": 5.4,
+        "y": 4.4,
+        "label": "fail"
+      },
+      {
+        "id": 12,
+        "x": 1.6,
+        "y": 8.1,
+        "label": "fail"
+      },
+      {
+        "id": 13,
+        "x": 4.7,
+        "y": 8.3,
+        "label": "pass"
+      },
+      {
+        "id": 14,
+        "x": 6.8,
+        "y": 5.4,
+        "label": "pass"
+      },
+      {
+        "id": 15,
+        "x": 3.6,
+        "y": 6.6,
+        "label": "fail"
+      },
+      {
+        "id": 16,
+        "x": 7.1,
+        "y": 7.9,
+        "label": "pass"
+      },
+      {
+        "id": 17,
+        "x": 5.2,
+        "y": 5.8,
+        "label": "fail"
+      },
+      {
+        "id": 18,
+        "x": 8.3,
+        "y": 7.0,
+        "label": "pass"
+      },
+      {
+        "id": 19,
+        "x": 2.9,
+        "y": 5.4,
+        "label": "fail"
+      },
+      {
+        "id": 20,
+        "x": 4.2,
+        "y": 6.4,
+        "label": "fail"
+      },
+      {
+        "id": 21,
+        "x": 7.8,
+        "y": 7.6,
+        "label": "pass"
+      },
+      {
+        "id": 22,
+        "x": 7.7,
+        "y": 2.9,
+        "label": "fail"
+      },
+      {
+        "id": 23,
+        "x": 7.4,
+        "y": 6.9,
+        "label": "pass"
+      },
+      {
+        "id": 24,
+        "x": 4.7,
+        "y": 7.7,
+        "label": "fail"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 1.1,
+        "y": 6.4,
+        "label": "fail"
+      },
+      {
+        "id": 2,
+        "x": 7.4,
+        "y": 5.3,
+        "label": "pass"
+      },
+      {
+        "id": 3,
+        "x": 2.5,
+        "y": 8.0,
+        "label": "fail"
+      },
+      {
+        "id": 4,
+        "x": 9.1,
+        "y": 2.6,
+        "label": "pass"
+      },
+      {
+        "id": 5,
+        "x": 4.5,
+        "y": 7.8,
+        "label": "fail"
+      },
+      {
+        "id": 6,
+        "x": 5.7,
+        "y": 8.2,
+        "label": "pass"
+      },
+      {
+        "id": 7,
+        "x": 8.8,
+        "y": 6.8,
+        "label": "pass"
+      },
+      {
+        "id": 8,
+        "x": 8.6,
+        "y": 9.0,
+        "label": "pass"
+      },
+      {
+        "id": 9,
+        "x": 3.3,
+        "y": 8.2,
+        "label": "pass"
+      },
+      {
+        "id": 10,
+        "x": 3.2,
+        "y": 5.9,
+        "label": "fail"
+      },
+      {
+        "id": 11,
+        "x": 3.4,
+        "y": 4.5,
+        "label": "fail"
+      },
+      {
+        "id": 12,
+        "x": 1.1,
+        "y": 4.7,
+        "label": "fail"
+      },
+      {
+        "id": 13,
+        "x": 5.5,
+        "y": 4.7,
+        "label": "fail"
+      },
+      {
+        "id": 14,
+        "x": 4.4,
+        "y": 6.3,
+        "label": "fail"
+      },
+      {
+        "id": 15,
+        "x": 1.1,
+        "y": 9.2,
+        "label": "fail"
+      },
+      {
+        "id": 16,
+        "x": 9.0,
+        "y": 6.1,
+        "label": "pass"
+      },
+      {
+        "id": 17,
+        "x": 1.9,
+        "y": 2.9,
+        "label": "fail"
+      },
+      {
+        "id": 18,
+        "x": 6.4,
+        "y": 4.4,
+        "label": "pass"
+      },
+      {
+        "id": 19,
+        "x": 4.8,
+        "y": 4.8,
+        "label": "fail"
+      },
+      {
+        "id": 20,
+        "x": 5.3,
+        "y": 6.1,
+        "label": "fail"
+      },
+      {
+        "id": 21,
+        "x": 0.8,
+        "y": 3.8,
+        "label": "fail"
+      },
+      {
+        "id": 22,
+        "x": 5.0,
+        "y": 8.7,
+        "label": "pass"
+      },
+      {
+        "id": 23,
+        "x": 6.1,
+        "y": 6.5,
+        "label": "pass"
+      },
+      {
+        "id": 24,
+        "x": 1.9,
+        "y": 6.0,
+        "label": "fail"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 4.9,
+        "y": 7.5,
+        "label": "pass"
+      },
+      {
+        "id": 2,
+        "x": 1.9,
+        "y": 9.2,
+        "label": "fail"
+      },
+      {
+        "id": 3,
+        "x": 6.5,
+        "y": 6.5,
+        "label": "pass"
+      },
+      {
+        "id": 4,
+        "x": 3.3,
+        "y": 5.9,
+        "label": "fail"
+      },
+      {
+        "id": 5,
+        "x": 2.3,
+        "y": 7.1,
+        "label": "fail"
+      },
+      {
+        "id": 6,
+        "x": 4.2,
+        "y": 9.1,
+        "label": "fail"
+      },
+      {
+        "id": 7,
+        "x": 5.4,
+        "y": 7.1,
+        "label": "pass"
+      },
+      {
+        "id": 8,
+        "x": 3.8,
+        "y": 5.5,
+        "label": "fail"
+      },
+      {
+        "id": 9,
+        "x": 0.9,
+        "y": 2.9,
+        "label": "fail"
+      },
+      {
+        "id": 10,
+        "x": 5.1,
+        "y": 5.0,
+        "label": "fail"
+      },
+      {
+        "id": 11,
+        "x": 2.9,
+        "y": 3.9,
+        "label": "fail"
+      },
+      {
+        "id": 12,
+        "x": 5.6,
+        "y": 6.0,
+        "label": "fail"
+      },
+      {
+        "id": 13,
+        "x": 7.6,
+        "y": 5.7,
+        "label": "pass"
+      },
+      {
+        "id": 14,
+        "x": 7.5,
+        "y": 9.5,
+        "label": "pass"
+      },
+      {
+        "id": 15,
+        "x": 7.5,
+        "y": 4.4,
+        "label": "pass"
+      },
+      {
+        "id": 16,
+        "x": 4.1,
+        "y": 7.6,
+        "label": "fail"
+      },
+      {
+        "id": 17,
+        "x": 6.2,
+        "y": 3.6,
+        "label": "fail"
+      },
+      {
+        "id": 18,
+        "x": 8.5,
+        "y": 9.2,
+        "label": "pass"
+      },
+      {
+        "id": 19,
+        "x": 3.4,
+        "y": 8.8,
+        "label": "fail"
+      },
+      {
+        "id": 20,
+        "x": 7.0,
+        "y": 5.6,
+        "label": "pass"
+      },
+      {
+        "id": 21,
+        "x": 1.4,
+        "y": 4.8,
+        "label": "fail"
+      },
+      {
+        "id": 22,
+        "x": 4.8,
+        "y": 3.5,
+        "label": "fail"
+      },
+      {
+        "id": 23,
+        "x": 4.7,
+        "y": 6.3,
+        "label": "pass"
+      },
+      {
+        "id": 24,
+        "x": 3.9,
+        "y": 4.5,
+        "label": "fail"
+      }
+    ]
+  ]
+}

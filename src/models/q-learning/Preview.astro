@@ -1,0 +1,81 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// the first maze, and the path the mouse learns.
+import { datasets } from './data';
+import { greedyPath, train } from './math';
+
+const dataset = datasets[0];
+const world = dataset?.mazes[0];
+if (!dataset || !world) throw new Error('Q-Learning has no data');
+const { Q } = train(
+  world,
+  dataset.rewards,
+  {
+    alpha: dataset.alpha.initial,
+    gamma: dataset.gamma.initial,
+    epsilon: dataset.epsilon.initial,
+  },
+  dataset.seed,
+  dataset.maxEpisodeSteps,
+  { episodes: dataset.episodes.max },
+);
+const path = greedyPath(world, dataset.rewards, Q).cells;
+const width = 320;
+const height = 200;
+const size = Math.min(280 / world.columns, 180 / world.rows);
+const left = (width - size * world.columns) / 2;
+const top = (height - size * world.rows) / 2;
+const at = (cell: number) => ({
+  x: left + (cell % world.columns) * size,
+  y: top + Math.floor(cell / world.columns) * size,
+});
+const fill = (cell: number) =>
+  world.walls.includes(cell)
+    ? 'var(--c-muted)'
+    : world.cats.includes(cell)
+      ? 'color-mix(in srgb, var(--c-class-1) 40%, var(--c-surface))'
+      : cell === world.goal
+        ? 'color-mix(in srgb, var(--c-class-2) 40%, var(--c-surface))'
+        : 'var(--c-surface)';
+const line = path
+  .map((cell, i) => {
+    const p = at(cell);
+    return `${i === 0 ? 'M' : 'L'}${p.x + size / 2},${p.y + size / 2}`;
+  })
+  .join('');
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="A small maze with walls, a cat and cheese, and the path the mouse learns"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {Array.from({ length: world.columns * world.rows }, (_, cell) => (
+    <rect
+      x={at(cell).x}
+      y={at(cell).y}
+      width={size}
+      height={size}
+      fill={fill(cell)}
+      stroke="var(--c-hairline)"
+    />
+  ))}
+  <path
+    d={line}
+    fill="none"
+    stroke="var(--c-line)"
+    stroke-width="3"
+    stroke-dasharray="6 5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  ></path>
+</svg>

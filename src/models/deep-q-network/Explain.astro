@@ -1,0 +1,205 @@
+---
+// The explanation below the Lab: the field, the symbols, a network instead
+// of a table, replay and the target network, ε, and the model in short.
+// Static HTML; formulas are rendered by KaTeX at build time.
+import type { Dataset } from './data';
+
+import { renderTex } from '../../lib/katex';
+import { equations } from './equations';
+
+interface Props {
+  dataset: Dataset;
+}
+
+const { dataset } = Astro.props;
+const { settings } = dataset;
+const tex = Object.fromEntries(equations.map((e) => [e.id, renderTex(e.tex)]));
+---
+
+<div class="explain">
+  <section aria-labelledby="dqn-data">
+    <h2 id="dqn-data">What you are looking at</h2>
+    <p>
+      A mouse starts in the bottom-left square of a small field. The cheese is
+      worth +10, a cat costs 10, and every step costs 1, so a short safe path is
+      best. This is the same game as Q-Learning, but the mouse's knowledge is
+      kept in a small neural network instead of a table.
+    </p>
+    <p>
+      The triangles show the network's value for each move from each square:
+      green good, orange bad. The arrows are its best moves, and the dashed line
+      is the path it would take. The pink arrows are the moves it just practised
+      from memory. Below, the chart shows how much reward each episode earned.
+      The fields are made up, and <strong>Refresh Data</strong> shows another.
+    </p>
+  </section>
+
+  <section aria-labelledby="dqn-symbols">
+    <h2 id="dqn-symbols">What each symbol means</h2>
+    <dl class="symbols">
+      <div>
+        <dt>s, a, r, s′</dt>
+        <dd>A square, a move, its reward, and the square it led to.</dd>
+      </div>
+      <div>
+        <dt>Q(s, a)</dt>
+        <dd>
+          The network's value for that move: the reward it expects from here on.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-line">y</dt>
+        <dd>
+          The target: the reward plus γ times the best value of the next square.
+        </dd>
+      </div>
+      <div>
+        <dt>γ</dt>
+        <dd>How much later rewards count: here {settings.gamma}.</dd>
+      </div>
+      <div>
+        <dt class="sym-error">L</dt>
+        <dd>
+          The loss: how far the network's value is from the target, squared.
+        </dd>
+      </div>
+      <div>
+        <dt class="sym-a">ε</dt>
+        <dd>
+          How often the mouse tries a random move instead of its best one.
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="dqn-network">
+    <h2 id="dqn-network">A network instead of a table</h2>
+    <p>
+      Q-Learning keeps one number for every square and move. That works for a
+      small grid, but not when there are millions of possible situations, like
+      the screens of a video game. A Deep Q-Network replaces the table with a
+      neural network: it takes a description of the situation and gives a value
+      for every move.
+    </p>
+    <div class="formula" set:html={tex.network} />
+    <p>
+      Here the description is just the square's column and row, and the network
+      has {settings.hidden} hidden units. Because nearby squares have similar
+      inputs, what the mouse learns in one square spreads to its neighbours,
+      even ones it has never visited. That is the strength of a network, and
+      also its risk: a lesson can spread where it does not belong.
+    </p>
+  </section>
+
+  <section aria-labelledby="dqn-learn">
+    <h2 id="dqn-learn">How it learns</h2>
+    <p>
+      Learning works like Q-Learning: a move's value should equal its reward
+      plus the discounted value of the next square. The network is nudged, by
+      gradient descent, to shrink the gap.
+    </p>
+    <div class="formula" set:html={tex.loss} />
+    <p>
+      Two tricks keep this steady. <strong>Replay:</strong> every move goes into
+      a memory of the last {settings.capacity}, and each step the network
+      practises on {settings.batch} moves drawn from it at random, not just on
+      the latest move. That breaks up runs of similar moves, which would
+      otherwise pull the network one way and then another.{' '}
+      <strong>A target network:</strong> the targets y come from a copy of the
+      network that is refreshed only every {settings.targetEvery} steps, so the
+      network is not chasing a target that moves with every update.
+    </p>
+  </section>
+
+  <section aria-labelledby="dqn-explore">
+    <h2 id="dqn-explore">Exploring, and the reward chart</h2>
+    <p>
+      With chance ε the mouse tries a random move, so it keeps discovering new
+      squares. Early episodes are long and costly; as the network improves, the
+      reward per episode climbs towards the best possible. The chart is bumpy
+      because random moves sometimes walk the mouse into a cat.
+    </p>
+    <p>
+      Training is not guaranteed to succeed. Change ε and the whole run plays
+      out differently: sometimes the network finds the shortest path, sometimes
+      it settles on a longer one or none at all. Deep reinforcement learning is
+      famous for this.
+    </p>
+  </section>
+
+  <section aria-labelledby="dqn-summary">
+    <h2 id="dqn-summary">The model in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Act:</strong> take the network's best move, or with chance ε a
+        random one, and remember it.
+      </li>
+      <li>
+        <strong>Recall</strong> a few remembered moves at random.
+      </li>
+      <li>
+        <strong>Aim</strong> each at its target y, using the slow-changing
+        target network.
+      </li>
+      <li>
+        <strong>Nudge</strong> the network's weights to shrink the squared gap,
+        and repeat.
+      </li>
+    </ol>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .formula {
+    overflow-x: auto;
+    padding-block: var(--s-2);
+    font-size: var(--fs-18);
+  }
+
+  .symbols {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .symbols div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: baseline;
+  }
+
+  .symbols dt {
+    font-family: 'KaTeX_Math', 'Times New Roman', serif;
+    font-size: var(--fs-20);
+    font-style: italic;
+  }
+
+  .symbols dd {
+    margin: 0;
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

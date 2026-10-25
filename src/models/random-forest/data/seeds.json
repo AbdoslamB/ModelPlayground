@@ -1,0 +1,791 @@
+{
+  "id": "seeds",
+  "title": "Seeds in a tray",
+  "question": "Will this seed sprout?",
+  "note": "The seeds are made up: they sprout when warmth and water together are enough, and a few near the border break the rule.",
+  "columns": [
+    {
+      "key": "x",
+      "label": "Soil temperature",
+      "short": "Temp",
+      "unit": "°C",
+      "role": "x",
+      "decimals": 0
+    },
+    {
+      "key": "y",
+      "label": "Water",
+      "short": "Water",
+      "unit": "ml/day",
+      "role": "y",
+      "decimals": 0
+    }
+  ],
+  "classes": [
+    {
+      "id": "dry",
+      "name": "stays dry",
+      "short": "dry",
+      "plural": "dry seeds",
+      "shape": "triangle"
+    },
+    {
+      "id": "sprout",
+      "name": "sprouts",
+      "short": "sprout",
+      "plural": "sprouted seeds",
+      "shape": "circle"
+    }
+  ],
+  "axes": {
+    "x": [
+      5,
+      30
+    ],
+    "y": [
+      0,
+      40
+    ]
+  },
+  "maxDepth": 3,
+  "trees": {
+    "min": 1,
+    "max": 25,
+    "step": 2,
+    "initial": 9
+  },
+  "start": {
+    "x": 15.0,
+    "y": 23.0
+  },
+  "batches": [
+    [
+      {
+        "id": 1,
+        "x": 27,
+        "y": 17,
+        "label": "sprout"
+      },
+      {
+        "id": 2,
+        "x": 21,
+        "y": 9,
+        "label": "dry"
+      },
+      {
+        "id": 3,
+        "x": 28,
+        "y": 9,
+        "label": "sprout"
+      },
+      {
+        "id": 4,
+        "x": 20,
+        "y": 26,
+        "label": "sprout"
+      },
+      {
+        "id": 5,
+        "x": 20,
+        "y": 19,
+        "label": "dry"
+      },
+      {
+        "id": 6,
+        "x": 9,
+        "y": 13,
+        "label": "dry"
+      },
+      {
+        "id": 7,
+        "x": 21,
+        "y": 23,
+        "label": "sprout"
+      },
+      {
+        "id": 8,
+        "x": 22,
+        "y": 29,
+        "label": "sprout"
+      },
+      {
+        "id": 9,
+        "x": 13,
+        "y": 17,
+        "label": "dry"
+      },
+      {
+        "id": 10,
+        "x": 24,
+        "y": 12,
+        "label": "sprout"
+      },
+      {
+        "id": 11,
+        "x": 6,
+        "y": 4,
+        "label": "dry"
+      },
+      {
+        "id": 12,
+        "x": 10,
+        "y": 29,
+        "label": "dry"
+      },
+      {
+        "id": 13,
+        "x": 25,
+        "y": 4,
+        "label": "sprout"
+      },
+      {
+        "id": 14,
+        "x": 17,
+        "y": 2,
+        "label": "dry"
+      },
+      {
+        "id": 15,
+        "x": 27,
+        "y": 21,
+        "label": "sprout"
+      },
+      {
+        "id": 16,
+        "x": 17,
+        "y": 29,
+        "label": "sprout"
+      },
+      {
+        "id": 17,
+        "x": 12,
+        "y": 28,
+        "label": "dry"
+      },
+      {
+        "id": 18,
+        "x": 26,
+        "y": 26,
+        "label": "sprout"
+      },
+      {
+        "id": 19,
+        "x": 28,
+        "y": 30,
+        "label": "sprout"
+      },
+      {
+        "id": 20,
+        "x": 18,
+        "y": 37,
+        "label": "sprout"
+      },
+      {
+        "id": 21,
+        "x": 16,
+        "y": 16,
+        "label": "dry"
+      },
+      {
+        "id": 22,
+        "x": 11,
+        "y": 12,
+        "label": "dry"
+      },
+      {
+        "id": 23,
+        "x": 11,
+        "y": 19,
+        "label": "dry"
+      },
+      {
+        "id": 24,
+        "x": 26,
+        "y": 12,
+        "label": "dry"
+      },
+      {
+        "id": 25,
+        "x": 10,
+        "y": 32,
+        "label": "dry"
+      },
+      {
+        "id": 26,
+        "x": 13,
+        "y": 35,
+        "label": "sprout"
+      },
+      {
+        "id": 27,
+        "x": 12,
+        "y": 4,
+        "label": "dry"
+      },
+      {
+        "id": 28,
+        "x": 7,
+        "y": 38,
+        "label": "dry"
+      },
+      {
+        "id": 29,
+        "x": 7,
+        "y": 35,
+        "label": "dry"
+      },
+      {
+        "id": 30,
+        "x": 6,
+        "y": 27,
+        "label": "dry"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 18,
+        "y": 20,
+        "label": "dry"
+      },
+      {
+        "id": 2,
+        "x": 20,
+        "y": 20,
+        "label": "sprout"
+      },
+      {
+        "id": 3,
+        "x": 19,
+        "y": 37,
+        "label": "sprout"
+      },
+      {
+        "id": 4,
+        "x": 10,
+        "y": 28,
+        "label": "dry"
+      },
+      {
+        "id": 5,
+        "x": 14,
+        "y": 3,
+        "label": "dry"
+      },
+      {
+        "id": 6,
+        "x": 13,
+        "y": 17,
+        "label": "dry"
+      },
+      {
+        "id": 7,
+        "x": 29,
+        "y": 39,
+        "label": "sprout"
+      },
+      {
+        "id": 8,
+        "x": 11,
+        "y": 20,
+        "label": "dry"
+      },
+      {
+        "id": 9,
+        "x": 15,
+        "y": 38,
+        "label": "sprout"
+      },
+      {
+        "id": 10,
+        "x": 9,
+        "y": 3,
+        "label": "dry"
+      },
+      {
+        "id": 11,
+        "x": 19,
+        "y": 27,
+        "label": "sprout"
+      },
+      {
+        "id": 12,
+        "x": 17,
+        "y": 12,
+        "label": "dry"
+      },
+      {
+        "id": 13,
+        "x": 9,
+        "y": 38,
+        "label": "sprout"
+      },
+      {
+        "id": 14,
+        "x": 15,
+        "y": 12,
+        "label": "dry"
+      },
+      {
+        "id": 15,
+        "x": 10,
+        "y": 35,
+        "label": "sprout"
+      },
+      {
+        "id": 16,
+        "x": 24,
+        "y": 38,
+        "label": "sprout"
+      },
+      {
+        "id": 17,
+        "x": 20,
+        "y": 4,
+        "label": "dry"
+      },
+      {
+        "id": 18,
+        "x": 7,
+        "y": 21,
+        "label": "dry"
+      },
+      {
+        "id": 19,
+        "x": 18,
+        "y": 2,
+        "label": "dry"
+      },
+      {
+        "id": 20,
+        "x": 10,
+        "y": 10,
+        "label": "dry"
+      },
+      {
+        "id": 21,
+        "x": 22,
+        "y": 25,
+        "label": "sprout"
+      },
+      {
+        "id": 22,
+        "x": 17,
+        "y": 25,
+        "label": "sprout"
+      },
+      {
+        "id": 23,
+        "x": 22,
+        "y": 2,
+        "label": "dry"
+      },
+      {
+        "id": 24,
+        "x": 8,
+        "y": 11,
+        "label": "dry"
+      },
+      {
+        "id": 25,
+        "x": 15,
+        "y": 25,
+        "label": "dry"
+      },
+      {
+        "id": 26,
+        "x": 22,
+        "y": 32,
+        "label": "sprout"
+      },
+      {
+        "id": 27,
+        "x": 26,
+        "y": 23,
+        "label": "sprout"
+      },
+      {
+        "id": 28,
+        "x": 27,
+        "y": 4,
+        "label": "dry"
+      },
+      {
+        "id": 29,
+        "x": 14,
+        "y": 7,
+        "label": "dry"
+      },
+      {
+        "id": 30,
+        "x": 29,
+        "y": 14,
+        "label": "sprout"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 11,
+        "y": 25,
+        "label": "dry"
+      },
+      {
+        "id": 2,
+        "x": 22,
+        "y": 34,
+        "label": "sprout"
+      },
+      {
+        "id": 3,
+        "x": 10,
+        "y": 14,
+        "label": "dry"
+      },
+      {
+        "id": 4,
+        "x": 15,
+        "y": 13,
+        "label": "dry"
+      },
+      {
+        "id": 5,
+        "x": 9,
+        "y": 31,
+        "label": "dry"
+      },
+      {
+        "id": 6,
+        "x": 15,
+        "y": 7,
+        "label": "dry"
+      },
+      {
+        "id": 7,
+        "x": 29,
+        "y": 3,
+        "label": "sprout"
+      },
+      {
+        "id": 8,
+        "x": 20,
+        "y": 28,
+        "label": "sprout"
+      },
+      {
+        "id": 9,
+        "x": 18,
+        "y": 15,
+        "label": "sprout"
+      },
+      {
+        "id": 10,
+        "x": 22,
+        "y": 23,
+        "label": "sprout"
+      },
+      {
+        "id": 11,
+        "x": 16,
+        "y": 37,
+        "label": "sprout"
+      },
+      {
+        "id": 12,
+        "x": 22,
+        "y": 29,
+        "label": "sprout"
+      },
+      {
+        "id": 13,
+        "x": 10,
+        "y": 34,
+        "label": "dry"
+      },
+      {
+        "id": 14,
+        "x": 11,
+        "y": 5,
+        "label": "dry"
+      },
+      {
+        "id": 15,
+        "x": 27,
+        "y": 37,
+        "label": "sprout"
+      },
+      {
+        "id": 16,
+        "x": 24,
+        "y": 34,
+        "label": "sprout"
+      },
+      {
+        "id": 17,
+        "x": 13,
+        "y": 8,
+        "label": "dry"
+      },
+      {
+        "id": 18,
+        "x": 18,
+        "y": 37,
+        "label": "sprout"
+      },
+      {
+        "id": 19,
+        "x": 13,
+        "y": 22,
+        "label": "dry"
+      },
+      {
+        "id": 20,
+        "x": 15,
+        "y": 3,
+        "label": "dry"
+      },
+      {
+        "id": 21,
+        "x": 12,
+        "y": 15,
+        "label": "dry"
+      },
+      {
+        "id": 22,
+        "x": 7,
+        "y": 2,
+        "label": "dry"
+      },
+      {
+        "id": 23,
+        "x": 18,
+        "y": 23,
+        "label": "sprout"
+      },
+      {
+        "id": 24,
+        "x": 8,
+        "y": 5,
+        "label": "dry"
+      },
+      {
+        "id": 25,
+        "x": 26,
+        "y": 26,
+        "label": "sprout"
+      },
+      {
+        "id": 26,
+        "x": 27,
+        "y": 10,
+        "label": "sprout"
+      },
+      {
+        "id": 27,
+        "x": 6,
+        "y": 5,
+        "label": "dry"
+      },
+      {
+        "id": 28,
+        "x": 8,
+        "y": 25,
+        "label": "dry"
+      },
+      {
+        "id": 29,
+        "x": 12,
+        "y": 39,
+        "label": "sprout"
+      },
+      {
+        "id": 30,
+        "x": 28,
+        "y": 33,
+        "label": "sprout"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "x": 26,
+        "y": 36,
+        "label": "sprout"
+      },
+      {
+        "id": 2,
+        "x": 9,
+        "y": 24,
+        "label": "dry"
+      },
+      {
+        "id": 3,
+        "x": 12,
+        "y": 5,
+        "label": "dry"
+      },
+      {
+        "id": 4,
+        "x": 20,
+        "y": 9,
+        "label": "dry"
+      },
+      {
+        "id": 5,
+        "x": 23,
+        "y": 27,
+        "label": "sprout"
+      },
+      {
+        "id": 6,
+        "x": 15,
+        "y": 6,
+        "label": "dry"
+      },
+      {
+        "id": 7,
+        "x": 8,
+        "y": 2,
+        "label": "dry"
+      },
+      {
+        "id": 8,
+        "x": 29,
+        "y": 28,
+        "label": "sprout"
+      },
+      {
+        "id": 9,
+        "x": 23,
+        "y": 11,
+        "label": "dry"
+      },
+      {
+        "id": 10,
+        "x": 10,
+        "y": 1,
+        "label": "dry"
+      },
+      {
+        "id": 11,
+        "x": 21,
+        "y": 19,
+        "label": "sprout"
+      },
+      {
+        "id": 12,
+        "x": 15,
+        "y": 30,
+        "label": "dry"
+      },
+      {
+        "id": 13,
+        "x": 6,
+        "y": 27,
+        "label": "dry"
+      },
+      {
+        "id": 14,
+        "x": 20,
+        "y": 25,
+        "label": "sprout"
+      },
+      {
+        "id": 15,
+        "x": 20,
+        "y": 14,
+        "label": "dry"
+      },
+      {
+        "id": 16,
+        "x": 27,
+        "y": 5,
+        "label": "dry"
+      },
+      {
+        "id": 17,
+        "x": 13,
+        "y": 8,
+        "label": "dry"
+      },
+      {
+        "id": 18,
+        "x": 18,
+        "y": 19,
+        "label": "dry"
+      },
+      {
+        "id": 19,
+        "x": 16,
+        "y": 23,
+        "label": "sprout"
+      },
+      {
+        "id": 20,
+        "x": 11,
+        "y": 39,
+        "label": "sprout"
+      },
+      {
+        "id": 21,
+        "x": 6,
+        "y": 10,
+        "label": "dry"
+      },
+      {
+        "id": 22,
+        "x": 24,
+        "y": 2,
+        "label": "dry"
+      },
+      {
+        "id": 23,
+        "x": 16,
+        "y": 16,
+        "label": "dry"
+      },
+      {
+        "id": 24,
+        "x": 21,
+        "y": 4,
+        "label": "dry"
+      },
+      {
+        "id": 25,
+        "x": 22,
+        "y": 39,
+        "label": "sprout"
+      },
+      {
+        "id": 26,
+        "x": 27,
+        "y": 39,
+        "label": "sprout"
+      },
+      {
+        "id": 27,
+        "x": 15,
+        "y": 35,
+        "label": "sprout"
+      },
+      {
+        "id": 28,
+        "x": 23,
+        "y": 22,
+        "label": "sprout"
+      },
+      {
+        "id": 29,
+        "x": 12,
+        "y": 11,
+        "label": "dry"
+      },
+      {
+        "id": 30,
+        "x": 26,
+        "y": 16,
+        "label": "sprout"
+      }
+    ]
+  ]
+}

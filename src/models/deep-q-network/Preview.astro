@@ -1,0 +1,96 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// the first field, the trained network's best moves, and its path.
+import { datasets } from './data';
+import { argmax, greedyPath, qTable, train } from './math';
+
+const dataset = datasets[0];
+const world = dataset?.worlds[0];
+if (!dataset || !world) throw new Error('Deep Q-Network has no data');
+const { net } = train(
+  world,
+  dataset.rewards,
+  dataset.settings,
+  dataset.epsilon.initial,
+  dataset.steps.initial,
+);
+const Q = qTable(net, world);
+const path = greedyPath(world, dataset.rewards, Q).cells;
+const width = 320;
+const height = 200;
+const size = 34;
+const left = (width - size * world.columns) / 2;
+const top = (height - size * world.rows) / 2;
+const at = (cell: number) => ({
+  x: left + (cell % world.columns) * size + size / 2,
+  y: top + Math.floor(cell / world.columns) * size + size / 2,
+});
+const fill = (cell: number) =>
+  world.cats.includes(cell)
+    ? 'color-mix(in srgb, var(--c-class-1) 40%, var(--c-surface))'
+    : cell === world.goal
+      ? 'color-mix(in srgb, var(--c-class-2) 40%, var(--c-surface))'
+      : 'var(--c-surface)';
+const DIRS = [
+  [0, -1],
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+];
+const line = path
+  .map((cell, i) => `${i === 0 ? 'M' : 'L'}${at(cell).x},${at(cell).y}`)
+  .join('');
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="A small field with cheese and cats, arrows for the best moves, and the path the network learns"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  {Array.from({ length: world.columns * world.rows }, (_, cell) => {
+    const c = at(cell);
+    const [dx = 0, dy = 0] = DIRS[argmax(Q[cell] ?? [0, 0, 0, 0])] ?? [];
+    const open = cell !== world.goal && !world.cats.includes(cell);
+    return (
+      <g>
+        <rect
+          x={c.x - size / 2}
+          y={c.y - size / 2}
+          width={size}
+          height={size}
+          fill={fill(cell)}
+          stroke="var(--c-hairline)"
+        />
+        {open && (
+          <line
+            x1={c.x - dx * 7}
+            y1={c.y - dy * 7}
+            x2={c.x + dx * 7}
+            y2={c.y + dy * 7}
+            stroke="var(--c-muted)"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        )}
+      </g>
+    );
+  })}
+  <path
+    d={line}
+    fill="none"
+    stroke="var(--c-line)"
+    stroke-width="3"
+    stroke-dasharray="6 5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  ></path>
+</svg>
