@@ -12,8 +12,10 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import Toggle from '../../ui/Toggle.svelte';
+  import { plainPython, sklearnPython } from './python';
   import { KmeansLab, STAND_NAMES } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -101,6 +103,19 @@
         ? 'Press Step or Run'
         : `After ${lab.steps} ${lab.steps === 1 ? 'step' : 'steps'}`,
   );
+
+  // "Try it in Python", from the Lab's people and stands.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      people: lab.rows,
+      stands: lab.centres,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="k-Means Lab" highlight={lab.highlight}>
@@ -324,6 +339,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${lab.rows.length} people as the Lab, with the stands where they are now, in a few lines of Python. Both run k-Means until no stand moves; Plain Python does every step by hand.`}
+/>
 
 <style>
   .key {
