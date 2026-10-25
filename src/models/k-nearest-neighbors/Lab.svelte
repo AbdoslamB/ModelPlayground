@@ -10,8 +10,10 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import Toggle from '../../ui/Toggle.svelte';
+  import { plainPython, sklearnPython } from './python';
   import { KnnLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -80,6 +82,20 @@
   }
 
   const fmt = (value: number) => formatNumber(value, 1);
+
+  // "Try it in Python", with the Lab's fruits, new fruit and k.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      rows: lab.rows,
+      query: lab.query,
+      k: lab.k,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="k-Nearest Neighbors Lab" highlight={lab.highlight}>
@@ -278,6 +294,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${total} fruits, new fruit and k as the Lab, in a few lines of Python. Plain Python measures every distance and counts the votes by hand.`}
+/>
 
 <style>
   .key {
