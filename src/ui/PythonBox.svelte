@@ -1,37 +1,34 @@
 <!--
-  "Try it in Python": the Lab's data and line as a short Python program,
-  which runs in the browser. It follows the Lab until the learner edits it;
-  Reset brings the Lab's version back. Collapsed by default. The code editor
-  (CodeMirror) loads only when the section is opened, and Python only on the
-  first Run; until the editor is ready, a plain text box shows the code.
+  "Try it in Python": the Lab's state as short Python programs, which run in
+  the browser. Each model passes its programs (one per tab, the first opens
+  first). The code follows the Lab until the learner edits it; Reset brings
+  the Lab's version back. Collapsed by default. The code editor (CodeMirror)
+  loads only when the section is opened, and Python only on the first Run;
+  until the editor is ready, a plain text box shows the code.
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import type { PythonData } from '../python';
-  import type { LinearRegressionLab } from '../store.svelte';
+  import type { PythonProgram } from '../lib/python';
   import type { Editor } from './codeEditor';
 
-  import { runPython } from '../../../lib/python';
-  import { readFlag, writeFlag } from '../../../lib/storage';
-  import { plainPython, sklearnPython } from '../python';
+  import { runPython } from '../lib/python';
+  import { readFlag, writeFlag } from '../lib/storage';
 
-  let { lab }: { lab: LinearRegressionLab } = $props();
+  interface Props {
+    /** One per tab; with a single program the tab bar is left out. */
+    programs: PythonProgram[];
+    /** A sentence or two above the code: what it does. */
+    lead: string;
+  }
 
-  type Tab = 'plain' | 'sklearn';
-  const TABS: { id: Tab; label: string }[] = [
-    { id: 'sklearn', label: 'With scikit-learn' },
-    { id: 'plain', label: 'Plain Python' },
-  ];
+  let { programs, lead }: Props = $props();
 
   let open = $state(false);
-  // scikit-learn first: it is how most people fit a line in Python.
-  let tab = $state<Tab>('sklearn');
-  /** The learner's edits, per tab; null follows the Lab. */
-  let drafts = $state<Record<Tab, string | null>>({
-    plain: null,
-    sklearn: null,
-  });
+  // svelte-ignore state_referenced_locally
+  let tab = $state(programs[0]?.id ?? '');
+  /** The learner's edits, per tab; missing follows the Lab. */
+  let drafts = $state<Record<string, string | undefined>>({});
   let running = $state(false);
   let result = $state<{ output: string; error: string | null } | null>(null);
   let host: HTMLDivElement | undefined = $state();
@@ -40,22 +37,11 @@
   let editor: Editor | null = $state.raw(null);
   let loading = false;
 
-  const data: PythonData = $derived({
-    x: lab.dataset.words.x,
-    y: lab.dataset.words.y,
-    xUnit: lab.xColumn?.unit ?? '',
-    yUnit: lab.yColumn?.unit ?? '',
-    title: lab.dataset.title,
-    xs: lab.xs,
-    ys: lab.ys,
-    exampleX: lab.dataset.exampleX,
-  });
-  const generated = $derived<Record<Tab, string>>({
-    plain: plainPython(data, lab.line),
-    sklearn: sklearnPython(data),
-  });
-  const code = $derived(drafts[tab] ?? generated[tab]);
-  const edited = $derived(drafts[tab] !== null);
+  const generated = $derived(
+    programs.find((p) => p.id === tab)?.code ?? programs[0]?.code ?? '',
+  );
+  const code = $derived(drafts[tab] ?? generated);
+  const edited = $derived(drafts[tab] !== undefined);
   const lines = $derived(code.split('\n').length);
 
   /** Loads the code editor the first time the section is open. */
@@ -104,7 +90,7 @@
   }
 
   function reset() {
-    drafts = { ...drafts, [tab]: null };
+    drafts = { ...drafts, [tab]: undefined };
     result = null;
   }
 </script>
@@ -133,32 +119,34 @@
   </summary>
 
   <div class="py__body">
-    <p class="py__lead">
-      The same {lab.rows.length}
-      {lab.dataset.words.rows} as the Lab, in a few lines of Python. Plain Python
-      works the best line out by hand, and checks your line from the Lab too.
-    </p>
+    <p class="py__lead">{lead}</p>
 
-    <div class="py__tabs" role="tablist" aria-label="Version of the code">
-      {#each TABS as t (t.id)}
-        <button
-          type="button"
-          role="tab"
-          id={`py-tab-${t.id}`}
-          aria-selected={tab === t.id}
-          aria-controls="py-panel"
-          class="py__tab"
-          onclick={() => {
-            tab = t.id;
-            result = null;
-          }}
-        >
-          {t.label}
-        </button>
-      {/each}
-    </div>
+    {#if programs.length > 1}
+      <div class="py__tabs" role="tablist" aria-label="Version of the code">
+        {#each programs as t (t.id)}
+          <button
+            type="button"
+            role="tab"
+            id={`py-tab-${t.id}`}
+            aria-selected={tab === t.id}
+            aria-controls="py-panel"
+            class="py__tab"
+            onclick={() => {
+              tab = t.id;
+              result = null;
+            }}
+          >
+            {t.label}
+          </button>
+        {/each}
+      </div>
+    {/if}
 
-    <div id="py-panel" role="tabpanel" aria-labelledby={`py-tab-${tab}`}>
+    <div
+      id="py-panel"
+      role={programs.length > 1 ? 'tabpanel' : undefined}
+      aria-labelledby={programs.length > 1 ? `py-tab-${tab}` : undefined}
+    >
       <div class="py__editor" bind:this={host} hidden={!editor}></div>
       <label class="visually-hidden" for="py-code">Python code</label>
       <textarea

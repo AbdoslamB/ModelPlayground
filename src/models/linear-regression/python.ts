@@ -5,6 +5,8 @@
  */
 import type { Line } from './math';
 
+import { pyList as list, pyNumber as literal } from '../../lib/pycode';
+
 export interface PythonData {
   /** Names for the two lists, e.g. "age" and "height". */
   x: string;
@@ -16,15 +18,6 @@ export interface PythonData {
   ys: readonly number[];
   /** The x the page's question asks about, e.g. 4 weeks. */
   exampleX: number;
-}
-
-/** Python literal for a number: no trailing zeros, no "−". */
-function literal(value: number): string {
-  return String(Number(value.toFixed(6)));
-}
-
-function list(values: readonly number[]): string {
-  return `[${values.map(literal).join(', ')}]`;
 }
 
 /** Plain Python, no libraries: the averages and the best line by hand. */

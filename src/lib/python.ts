@@ -5,6 +5,15 @@
  */
 import type { Reply, Request } from './python.worker';
 
+/** One tab of a model's "Try it in Python" section. */
+export interface PythonProgram {
+  id: string;
+  /** The tab's name, e.g. "With scikit-learn". */
+  label: string;
+  /** The program, following the Lab's current state. */
+  code: string;
+}
+
 export interface PythonResult {
   output: string;
   error: string | null;

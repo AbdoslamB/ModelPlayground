@@ -14,11 +14,12 @@
   import { decimalsForStep, formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import Toggle from '../../ui/Toggle.svelte';
+  import { plainPython, sklearnPython } from './python';
   import { LinearRegressionLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
-  import PythonBox from './views/PythonBox.svelte';
 
   interface Props {
     datasets: Dataset[];
@@ -37,6 +38,24 @@
   const yCol = $derived(lab.yColumn);
   const aDecimals = $derived(decimalsForStep(ds.params.a.step));
   const bDecimals = $derived(decimalsForStep(ds.params.b.step));
+
+  // "Try it in Python": scikit-learn first, as most people fit a line with it.
+  const python = $derived.by(() => {
+    const data = {
+      x: ds.words.x,
+      y: ds.words.y,
+      xUnit: xCol?.unit ?? '',
+      yUnit: yCol?.unit ?? '',
+      title: ds.title,
+      xs: lab.xs,
+      ys: lab.ys,
+      exampleX: ds.exampleX,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data, lab.line) },
+    ];
+  });
 
   /** The x the live equation uses: the selected row's, or the question's. */
   const liveX = $derived(lab.selectedRow?.x ?? ds.exampleX);
@@ -327,7 +346,10 @@
   {/snippet}
 </LabShell>
 
-<PythonBox {lab} />
+<PythonBox
+  programs={python}
+  lead={`The same ${lab.rows.length} ${ds.words.rows} as the Lab, in a few lines of Python. Plain Python works the best line out by hand, and checks your line from the Lab too.`}
+/>
 
 <style>
   /* The key to the symbols: small, one line each on wide screens. */

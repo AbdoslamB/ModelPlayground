@@ -1,37 +1,16 @@
-import { spawnSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 
 import type { PythonData } from './python';
 
+import {
+  hasModule,
+  numbers,
+  python,
+  runPython as run,
+} from '../../../tests/unit/run-python';
 import plants from './data/plants.json';
 import { fit, mse, predict, sums } from './math';
 import { plainPython, sklearnPython } from './python';
-
-/** A Python on this machine, if any; .pydeps holds the data scripts' libraries. */
-function findPython(): string | null {
-  for (const command of ['python3', 'python']) {
-    const probe = spawnSync(command, ['--version'], { encoding: 'utf8' });
-    if (probe.status === 0) return command;
-  }
-  return null;
-}
-
-const python = findPython();
-
-function run(code: string): { out: string; ok: boolean } {
-  if (!python) return { out: '', ok: false };
-  const prelude = "import sys; sys.path.insert(0, '.pydeps')\n";
-  const result = spawnSync(python, ['-c', prelude + code], {
-    encoding: 'utf8',
-    env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
-  });
-  return { out: result.stdout, ok: result.status === 0 };
-}
-
-/** Every number in a line of output, in order. */
-function numbers(line: string | undefined): number[] {
-  return (line?.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
-}
 
 const rows = plants.batches[0] ?? [];
 const data: PythonData = {
@@ -73,7 +52,7 @@ describe('the Python versions print the Lab’s numbers', () => {
     near(numbers(at)[1], predict(best, plants.exampleX));
   });
 
-  const hasSklearn = python !== null && run('import sklearn').ok;
+  const hasSklearn = hasModule('sklearn');
 
   it.skipIf(!hasSklearn)('scikit-learn: the same best line', () => {
     const { out, ok } = run(sklearnPython(data));
