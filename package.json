@@ -11,7 +11,7 @@
     "build": "astro build && node scripts/check-links.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "lint": "eslint --cache --max-warnings 0 . && stylelint --max-warnings 0 \"src/**/*.css\"",
+    "lint": "astro sync && eslint --cache --max-warnings 0 . && stylelint --max-warnings 0 \"src/**/*.css\"",
     "format": "prettier --cache --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
