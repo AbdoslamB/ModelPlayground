@@ -11,7 +11,9 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
+  import { plainPython, sklearnPython } from './python';
   import { BayesLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -104,6 +106,21 @@
         ? 'Likely normal'
         : 'Could be either',
   );
+
+  // "Try it in Python", with the Lab's message, α and switched-off words.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      training: dataset.training,
+      message: lab.text,
+      alpha: lab.alpha,
+      off: lab.off,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 {#snippet chanceOf(word: string, label: Label)}
@@ -334,6 +351,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${dataset.training.length} training messages, message and α as the Lab, in a few lines of Python. Plain Python counts the words and adds up each word's evidence by hand.`}
+/>
 
 <style>
   .message {
