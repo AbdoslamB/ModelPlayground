@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-import { openLab, view } from './helpers';
+import { openLab, plotBox, view } from './helpers';
 
 const path = 'models/k-nearest-neighbors/';
 
@@ -47,8 +47,7 @@ test('tapping the graph moves the new fruit and updates everything', async ({
   const before = [await distance.innerText(), await firstRow.innerText()];
 
   // Tap near the top-left: tall, narrow fruits are pears.
-  const plot = await view(page, 'graph').locator('clipPath rect').boundingBox();
-  if (!plot) throw new Error('no plot');
+  const plot = await plotBox(page);
   await page.mouse.click(
     plot.x + plot.width * 0.15,
     plot.y + plot.height * 0.15,
