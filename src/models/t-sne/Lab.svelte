@@ -10,7 +10,9 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
+  import { numpyPython, sklearnPython } from './python';
   import { TsneLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -87,6 +89,27 @@
       value: (r: Picture) => mapApart(r),
     },
   ]);
+
+  // "Try it in Python", from the Lab's pictures, start, perplexity and step.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      pictures: lab.rows,
+      kindNames: Object.fromEntries(
+        dataset.kinds.map((kd) => [kd.id, kd.name]),
+      ),
+      start: lab.rows.map((r) => r.start),
+      perplexity: lab.perplexity,
+      steps: lab.steps,
+      schedule: dataset.schedule,
+      neighbours: k,
+      reference: Math.max(0, refIndex),
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'numpy', label: 'By hand with NumPy', code: numpyPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="t-SNE Lab" highlight={lab.highlight}>
@@ -316,6 +339,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${lab.rows.length} pictures, starting map and perplexity as the Lab, in Python. By hand with NumPy takes the Lab's steps one by one; scikit-learn's TSNE runs by its own rules, so its last digits can differ.`}
+/>
 
 <style>
   .key {
