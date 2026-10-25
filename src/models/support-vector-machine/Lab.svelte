@@ -11,8 +11,10 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import Toggle from '../../ui/Toggle.svelte';
+  import { plainPython, sklearnPython } from './python';
   import { SvmLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -118,6 +120,29 @@
       }
     }
   }
+
+  // "Try it in Python", with the Lab's students (as dragged), C and kernel.
+  const python = $derived.by(() => {
+    const named = (sign: number) =>
+      dataset.classes.find((c) => c.sign === sign)?.name ?? '';
+    const data = {
+      title: dataset.title,
+      points: lab.points,
+      signs: lab.signs,
+      plus: named(1),
+      minus: named(-1),
+      names: [
+        lab.xColumn?.short.toLowerCase() ?? 'x',
+        lab.yColumn?.short.toLowerCase() ?? 'y',
+      ] as const,
+      C: lab.C,
+      kernel: lab.kernel,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="Support Vector Machine Lab" highlight={lab.highlight}>
@@ -361,6 +386,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${lab.points.length} students (where you dragged them), C and border as the Lab, in Python. scikit-learn uses the Lab's solver; Plain Python finds the same border with a simpler one, two weights at a time.`}
+/>
 
 <style>
   .key {
