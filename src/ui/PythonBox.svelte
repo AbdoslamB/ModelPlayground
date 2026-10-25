@@ -25,6 +25,8 @@
   let { programs, lead }: Props = $props();
 
   let open = $state(false);
+  /** False until the page's JavaScript runs: without it, the code shows. */
+  let started = $state(false);
   let Panel: Component<{ programs: PythonProgram[] }> | null = $state.raw(null);
 
   async function loadPanel() {
@@ -38,6 +40,7 @@
 
   onMount(() => {
     open = readFlag('python-open') === 'open';
+    started = true;
     if (open) void loadPanel();
   });
 
@@ -71,7 +74,8 @@
     <p class="py__lead">{lead}</p>
     {#if Panel}
       <Panel {programs} />
-    {:else}
+    {:else if open || !started}
+      <!-- While closed, the code is not built: the Lab can change every frame. -->
       <label class="visually-hidden" for="py-code">Python code</label>
       <textarea
         id="py-code"
