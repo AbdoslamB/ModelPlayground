@@ -11,8 +11,10 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import Toggle from '../../ui/Toggle.svelte';
+  import { plainPython, sklearnPython } from './python';
   import { TreeLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -96,6 +98,26 @@
       },
     },
   ]);
+
+  // "Try it in Python", with the Lab's days, depth and hand-moved questions.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      rows: lab.rows,
+      classes: lab.classes,
+      names: [
+        lab.xColumn?.label.toLowerCase() ?? 'x',
+        lab.yColumn?.label.toLowerCase() ?? 'y',
+      ] as const,
+      units: [lab.xColumn?.unit ?? '', lab.yColumn?.unit ?? ''] as const,
+      depth: lab.depth,
+      chosen: lab.chosen,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="Decision Tree Lab" highlight={lab.highlight}>
@@ -339,6 +361,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${total} days and depth as the Lab, in a few lines of Python. Plain Python grows the tree by hand, and keeps the questions you moved in the Lab.`}
+/>
 
 <style>
   .key {
