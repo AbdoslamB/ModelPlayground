@@ -11,9 +11,11 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import Toggle from '../../ui/Toggle.svelte';
   import { coverage, questionCount } from './math';
+  import { plainPython, sklearnPython } from './python';
   import { ForestLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -68,6 +70,28 @@
       text: (t: Tree) => lab.classInfo(lab.votes[t.id] ?? '')?.short ?? '',
     },
   ]);
+
+  // "Try it in Python", with the Lab's seeds, forest and new seed.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      rows: lab.rows,
+      classes: lab.classes,
+      names: [
+        lab.xColumn?.label.toLowerCase() ?? 'x',
+        lab.yColumn?.label.toLowerCase() ?? 'y',
+      ] as const,
+      units: [lab.xColumn?.unit ?? '', lab.yColumn?.unit ?? ''] as const,
+      query: lab.query,
+      size: lab.size,
+      forestSeed: lab.forestSeed,
+      maxDepth: dataset.maxDepth,
+    };
+    return [
+      { id: 'sklearn', label: 'With scikit-learn', code: sklearnPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="Random Forest Lab" highlight={lab.highlight}>
@@ -290,6 +314,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead={`The same ${lab.rows.length} seeds, trees and new seed as the Lab, in Python. Plain Python uses the Lab's own random numbers, so it grows the Lab's exact trees; scikit-learn makes its own random choices.`}
+/>
 
 <style>
   .key {
