@@ -41,7 +41,7 @@ export function numbers(line: string | undefined): number[] {
   return (line?.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
 }
 
-/** The output's lines, without the trailing newline. */
+/** The output's lines, without the trailing newline (Windows' \r too). */
 export function lines(out: string): string[] {
-  return out.trim().split('\n');
+  return out.trim().split(/\r?\n/);
 }
