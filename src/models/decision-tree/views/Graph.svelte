@@ -199,7 +199,7 @@
   }
 
   function end() {
-    move.cancel();
+    move.flush();
     box = null;
     dragging = false;
   }

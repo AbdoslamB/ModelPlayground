@@ -174,7 +174,7 @@
   }
 
   function end() {
-    move.cancel();
+    move.flush();
     rect = null;
     dragId = null;
     dragging = false;

@@ -157,7 +157,7 @@
   }
 
   function end() {
-    move.cancel();
+    move.flush();
     rect = null;
     dragging = false;
   }
