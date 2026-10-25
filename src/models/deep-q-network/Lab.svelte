@@ -12,7 +12,9 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
+  import { numpyPython, plainPython } from './python';
   import { DqnLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -91,6 +93,22 @@
       value: (d: Draw) => d.error,
     },
   ]);
+
+  // "Try it in Python": the Lab's training, from fresh weights.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      world: lab.world,
+      rewards: dataset.rewards,
+      settings: dataset.settings,
+      epsilon: lab.epsilon,
+      steps: lab.steps,
+    };
+    return [
+      { id: 'numpy', label: 'With NumPy', code: numpyPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="Deep Q-Network Lab" highlight={lab.highlight}>
@@ -350,6 +368,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead="The Lab's field, ε and training so far, in Python: a small network trained from fresh weights with the Lab's own random numbers, replay memory and target network. NumPy keeps the weights in arrays; Plain Python in lists."
+/>
 
 <style>
   .key {
