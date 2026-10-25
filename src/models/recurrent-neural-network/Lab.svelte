@@ -12,8 +12,10 @@
   import { formatNumber } from '../../lib/format';
   import DataTable from '../../ui/DataTable.svelte';
   import MetricCard from '../../ui/MetricCard.svelte';
+  import PythonBox from '../../ui/PythonBox.svelte';
   import Slider from '../../ui/Slider.svelte';
   import { surprise, top } from './math';
+  import { numpyPython, plainPython } from './python';
   import { RnnLab } from './store.svelte';
   import Graph from './views/Graph.svelte';
 
@@ -84,6 +86,23 @@
         s.next === null ? NaN : surprise(s.probabilities[s.next] ?? 0),
     },
   ]);
+
+  // "Try it in Python": the Lab's network on the Lab's text and temperature.
+  const python = $derived.by(() => {
+    const data = {
+      title: dataset.title,
+      question: dataset.question,
+      text: lab.text,
+      temperature: lab.temperature,
+      alphabet,
+      weights: dataset.weights,
+      maxSteps: dataset.maxSteps,
+    };
+    return [
+      { id: 'numpy', label: 'With NumPy', code: numpyPython(data) },
+      { id: 'plain', label: 'Plain Python', code: plainPython(data) },
+    ];
+  });
 </script>
 
 <LabShell label="Recurrent Neural Network Lab" highlight={lab.highlight}>
@@ -288,6 +307,11 @@
     </div>
   {/snippet}
 </LabShell>
+
+<PythonBox
+  programs={python}
+  lead="The Lab's trained network, its text and temperature, in Python: the same weights, so the same chances. NumPy does each step as two matrix products; Plain Python writes the sums out."
+/>
 
 <style>
   .message {

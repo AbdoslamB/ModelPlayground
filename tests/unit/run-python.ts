@@ -43,5 +43,5 @@ export function numbers(line: string | undefined): number[] {
 
 /** The output's lines, without the trailing newline (Windows' \r too). */
 export function lines(out: string): string[] {
-  return out.trim().split(/\r?\n/);
+  return out.trimEnd().split(/\r?\n/);
 }
