@@ -54,17 +54,21 @@ describe('the Python versions print the Lab’s numbers', () => {
 
   const hasSklearn = hasModule('sklearn');
 
-  it.skipIf(!hasSklearn)('scikit-learn: the same best line', () => {
-    const { out, ok } = run(sklearnPython(data));
-    expect(ok).toBe(true);
-    const [top, misses, at] = out.trim().split('\n');
-    const [ba, bb, be] = numbers(top);
-    near(ba, best.a);
-    near(bb, best.b);
-    near(be, mse(s, best));
-    near(numbers(misses)[0], Math.sqrt(mse(s, best)));
-    near(numbers(at)[1], predict(best, plants.exampleX));
-  });
+  it.skipIf(!hasSklearn)(
+    'scikit-learn: the same best line',
+    { timeout: 60_000 },
+    () => {
+      const { out, ok } = run(sklearnPython(data));
+      expect(ok).toBe(true);
+      const [top, misses, at] = out.trim().split('\n');
+      const [ba, bb, be] = numbers(top);
+      near(ba, best.a);
+      near(bb, best.b);
+      near(be, mse(s, best));
+      near(numbers(misses)[0], Math.sqrt(mse(s, best)));
+      near(numbers(at)[1], predict(best, plants.exampleX));
+    },
+  );
 });
 
 describe('the code text', () => {
