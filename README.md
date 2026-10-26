@@ -4,7 +4,7 @@ Learn machine learning by moving things. Every model is a small lab: drag, slide
 
 Live site (after launch): https://abdoslamb.github.io/ModelPlayground/
 
-**Status:** all eleven models are ready: Linear Regression, k-Nearest Neighbors, k-Means, Naive Bayes, Decision Tree, Random Forest, Support Vector Machine, Q-Learning, t-SNE, Recurrent Neural Network and Deep Q-Network. Each has a Lab (graph, equation and table), a short explanation of the model, and a "Try it in Python" section: the Lab's current state as a short program (with scikit-learn or NumPy, and by hand) that runs in the browser with [Pyodide](https://pyodide.org) and prints the Lab's numbers.
+**Status:** all eleven models are ready: Linear Regression, k-Nearest Neighbors, k-Means, Naive Bayes, Decision Tree, Random Forest, Support Vector Machine, Q-Learning, t-SNE, Recurrent Neural Network and Deep Q-Network. Each has a Lab (graph, equation and table), a short explanation of the model, and a "Try it in Python" section: the Lab's current state as a short program (with scikit-learn or NumPy, and by hand) that runs in the browser with [Pyodide](https://pyodide.org) and prints the Lab's numbers. **A/B Testing** (Experiments) is a story in seven steps instead: decide who to test and what to measure, sign the contract, plan the test, run it (and resist stopping early), check it, read it, and decide.
 
 ## Run it locally
 
@@ -52,6 +52,7 @@ python python/q_learning.py  # Q-Learning mazes, training replays and value iter
 python python/t_sne.py  # t-SNE pictures, checked piece by piece with scikit-learn
 python python/recurrent_neural_network.py  # trains the small RNN (numpy) and writes its weights
 python python/deep_q_network.py  # DQN fields, and training replays the page must match
+python python/a_b_testing.py  # A/B Testing: six simulated tests and their SciPy results
 ```
 
 With an embedded Python that has no `venv`, install into the project instead with `pip install --target .pydeps -r python/requirements.txt`. The scripts find it automatically.

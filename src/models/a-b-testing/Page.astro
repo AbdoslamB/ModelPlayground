@@ -1,0 +1,325 @@
+---
+// The A/B Testing story. The island (Lab.svelte) holds the seven steps and
+// everything that moves; the steps' static text is written here and passed
+// in as named slots, so it is plain HTML and adds no JavaScript. Every number
+// comes from math.ts, for the default plan.
+import 'katex/dist/katex.min.css';
+
+import ModelLayout from '../../layouts/ModelLayout.astro';
+import { formatNumber } from '../../lib/format';
+import { renderTex } from '../../lib/katex';
+import { datasets } from './data';
+import { equations } from './equations';
+import Explain from './Explain.astro';
+import Lab from './Lab.svelte';
+import { aaRuns, dollars, normalQuantile, share } from './math';
+import { meta } from './meta';
+import { programs } from './python';
+
+const tex = (id: string) => {
+  const found = equations.find((e) => e.id === id);
+  return found ? renderTex(found.tex) : '';
+};
+const formulas = {
+  hypotheses: tex('hypotheses'),
+  n: tex('n'),
+  z: tex('z'),
+};
+const dataset = datasets[0];
+const test = dataset?.tests[1];
+if (!dataset || !test) throw new Error('A/B Testing has no data');
+
+const { mean } = dataset.history;
+const searchers = dataset.searchersPerDay;
+const alpha = dataset.alpha.initial;
+const mde = dataset.mde.initial / 100;
+const perDay = searchers * mean * mde;
+const runs = aaRuns(
+  dataset.aa.seed,
+  dataset.aa.tests,
+  dataset.day.max,
+  normalQuantile(1 - alpha / 2),
+);
+const users = (value: number) => formatNumber(value, 0);
+
+// The story opens on day 1 of the first scenario.
+const initialPython = programs({
+  title: test.title,
+  days: test.days.slice(0, 1),
+  alpha,
+  power: dataset.power.initial,
+  mde,
+  mean,
+  sd: dataset.history.sd,
+  perGroupPerDay: searchers / 2,
+});
+
+// The six cases, as made-up intervals against 0 and the MDE.
+const cases = [
+  { id: 'win', lo: 2.6, hi: 4.4, name: 'Clear win', verdict: 'Launch' },
+  {
+    id: 'borderline',
+    lo: 0.6,
+    hi: 3.2,
+    name: 'Borderline',
+    verdict: 'Run a longer test',
+  },
+  {
+    id: 'small',
+    lo: 0.4,
+    hi: 1.5,
+    name: 'Real but too small',
+    verdict: 'Don’t launch',
+  },
+  {
+    id: 'uncertain',
+    lo: -0.9,
+    hi: 3,
+    name: 'Too uncertain',
+    verdict: 'Run a bigger test',
+  },
+  {
+    id: 'none',
+    lo: -0.8,
+    hi: 0.9,
+    name: 'No useful effect',
+    verdict: 'Don’t launch',
+  },
+  { id: 'worse', lo: -2.2, hi: -0.6, name: 'Worse', verdict: 'Don’t launch' },
+];
+const cx = (v: number) => 300 + v * 50;
+---
+
+<ModelLayout meta={meta}>
+  <p slot="lead">
+    You are StylePulse’s lead data scientist. Go through the seven steps in
+    order: each choice you make changes what the later steps show.
+  </p>
+  <Lab
+    slot="lab"
+    client:load
+    dataset={dataset}
+    formulas={formulas}
+    initialPython={initialPython}
+  >
+    <Fragment slot="vp">
+      <p class="who">The VP of Product, on Slack:</p>
+      <p>
+        “Hey! The ML team just finished RankNet-v2, our new search ranking.
+        Let’s split all homepage traffic 50/50 and measure time on site!”
+      </p>
+    </Fragment>
+    <Fragment slot="intro1">
+      <p>
+        StylePulse is a made-up online clothes shop. {users(searchers)} people
+        search it every day. Should it replace its search ranking with
+        RankNet-v2? An A/B test answers that: each searcher is put at random in
+        <strong>control</strong> (the old ranking) or <strong>treatment</strong>
+        (RankNet-v2), so any difference bigger than chance comes from the
+        ranking. The VP’s plan has two problems. Find them.
+      </p>
+    </Fragment>
+    <Fragment slot="intro2">
+      <p>
+        Before any data comes in, write down what counts as a win. Three numbers
+        do it. Move the sliders, then sign.
+      </p>
+    </Fragment>
+    <Fragment slot="note2">
+      <p>
+        <strong>Why an MDE of {formatNumber(mde * 100, 0)}%?</strong>
+        The MDE (minimum detectable effect) is the smallest lift worth
+        launching. For {users(searchers)} searchers at ${formatNumber(mean, 2)}{' '}
+        a day, {formatNumber(mde * 100, 0)}% is {dollars(perDay)} a day, about{' '}
+        {dollars(perDay * 365)} a year. Anything smaller is not worth running
+        and maintaining a new model. This is the line for{' '}
+        <strong>practical</strong> significance.
+      </p>
+    </Fragment>
+    <Fragment slot="intro3">
+      <p>
+        How many searchers does the test need to spot the MDE, and how long must
+        it run? The formula uses the contract’s α, power and MDE, and σ, how
+        much spend varies from searcher to searcher.
+      </p>
+    </Fragment>
+    <Fragment slot="intro4">
+      <p>
+        The test is live, and day 1 is in. Press <strong>Run</strong> to stream
+        the days. The graph shows the lift so far with its interval (the band),
+        against 0 and the MDE; the strip under it shows the p-value each day.
+        Drag the day handle to go back, or the MDE line to change the plan.
+      </p>
+    </Fragment>
+    <Fragment slot="intro5">
+      <p>
+        Hold on. Before anyone celebrates, a careful data scientist audits the
+        data for broken tracking and for the outside world. Load the other tests
+        below: each one changes steps 4, 6 and 7 too.
+      </p>
+    </Fragment>
+    <Fragment slot="note5">
+      <p>
+        <strong>Always check for outside events</strong> (a holiday, a rival’s
+        flash sale, news) and <strong>for broken tracking</strong> (users
+        missing from one group, a new design’s novelty) before trusting a
+        p-value. A/B tests do not happen in a vacuum.
+      </p>
+    </Fragment>
+    <Fragment slot="intro6">
+      <p>
+        Welch’s z-test says how many standard errors apart the two groups’
+        average spend is, and the interval gives the range the true lift
+        probably lies in. Pick a day in the graph or the table to see its
+        numbers.
+      </p>
+    </Fragment>
+    <Fragment slot="note6">
+      <p>
+        <strong>
+          A p-value under α only says the effect is probably not zero
+        </strong>
+        (statistical significance). It does not say it is big enough to matter.
+        For that, compare the whole interval with the MDE (practical
+        significance), and check that the guardrails held.
+      </p>
+    </Fragment>
+    <Fragment slot="intro7">
+      <p>
+        The final meeting with the CEO. RankNet-v2 needs extra servers to run.
+        Move the cost slider to see how the money and the test result decide
+        together. The checks run in a fixed order: too early, uneven split,
+        guardrails, a fading lift, the interval, then money.
+      </p>
+    </Fragment>
+    <Fragment slot="cases">
+      <svg
+        class="cases-figure"
+        viewBox="0 0 600 300"
+        role="img"
+        aria-label="Six intervals against 0 and the MDE: a clear win, borderline, real but too small, too uncertain, no useful effect, and worse. The one that matches your test is highlighted."
+      >
+        <line class="cf-zero" x1={cx(0)} x2={cx(0)} y1="18" y2="290"></line>
+        <line class="cf-mde" x1={cx(2)} x2={cx(2)} y1="18" y2="290"></line>
+        <text class="cf-axis" x={cx(0)} y="12" text-anchor="middle">
+          0
+        </text>
+        <text
+          class="cf-axis cf-axis--mde"
+          x={cx(2)}
+          y="12"
+          text-anchor="middle"
+        >
+          MDE
+        </text>
+        {cases.map((c, i) => (
+          <g class={`case case--${c.id}`}>
+            <rect
+              class="cf-row"
+              x="0"
+              y={24 + i * 44}
+              width="600"
+              height="42"
+              rx="6"
+            />
+            <text class="cf-name" x="10" y={42 + i * 44}>
+              {c.name}
+            </text>
+            <text class="cf-verdict" x="10" y={58 + i * 44}>
+              {c.verdict}
+            </text>
+            <line
+              class="cf-ci"
+              x1={cx(c.lo)}
+              x2={cx(c.hi)}
+              y1={45 + i * 44}
+              y2={45 + i * 44}
+            />
+          </g>
+        ))}
+      </svg>
+      <p class="cases-note">
+        The highlighted row is your test. Peeking makes the wrong row likely: of{' '}
+        {users(runs.tests)} simulated tests of a useless change,{' '}
+        {share(runs.ever / runs.tests)}
+        looked like a win on some day.
+      </p>
+    </Fragment>
+  </Lab>
+  <Explain slot="explain" />
+</ModelLayout>
+
+<style>
+  .who {
+    color: var(--c-muted);
+    font-size: var(--fs-14);
+    font-weight: 700;
+  }
+
+  .cases-figure {
+    width: 100%;
+    height: auto;
+    font-size: 14px;
+  }
+
+  .cf-row {
+    fill: transparent;
+  }
+
+  .cf-name {
+    fill: var(--c-text);
+    font-weight: 600;
+  }
+
+  .cf-verdict,
+  .cf-axis {
+    fill: var(--c-muted);
+    font-size: 12px;
+  }
+
+  .cf-axis--mde {
+    fill: var(--c-a-ink);
+    font-weight: 600;
+  }
+
+  .cf-zero {
+    stroke: var(--c-text);
+    stroke-width: 1.5;
+  }
+
+  .cf-mde {
+    stroke: var(--c-a);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+  }
+
+  .cf-ci {
+    stroke: var(--c-muted);
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+
+  :global([data-found='win']) .case--win .cf-row,
+  :global([data-found='borderline']) .case--borderline .cf-row,
+  :global([data-found='small']) .case--small .cf-row,
+  :global([data-found='uncertain']) .case--uncertain .cf-row,
+  :global([data-found='none']) .case--none .cf-row,
+  :global([data-found='worse']) .case--worse .cf-row {
+    fill: var(--c-highlight);
+    stroke: var(--c-control-edge);
+  }
+
+  :global([data-found='win']) .case--win .cf-ci,
+  :global([data-found='borderline']) .case--borderline .cf-ci,
+  :global([data-found='small']) .case--small .cf-ci,
+  :global([data-found='uncertain']) .case--uncertain .cf-ci,
+  :global([data-found='none']) .case--none .cf-ci,
+  :global([data-found='worse']) .case--worse .cf-ci {
+    stroke: var(--c-line);
+  }
+
+  .cases-note {
+    color: var(--c-muted);
+    font-size: var(--fs-14);
+  }
+</style>

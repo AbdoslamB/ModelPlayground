@@ -1,0 +1,64 @@
+---
+// A small static picture of the Lab for the home page card (no JavaScript):
+// the Clear win test, its lift so far with the 95% interval, 0 and the MDE.
+import { datasets } from './data';
+import { welch } from './math';
+
+const dataset = datasets[0];
+const test = dataset?.tests.find((t) => t.id === 'win');
+if (!dataset || !test) throw new Error('A/B Testing has no data');
+const alpha = dataset.alpha.initial;
+const results = test.days.map((_, i) =>
+  welch(test.days.slice(0, i + 1), alpha),
+);
+const width = 320;
+const height = 200;
+const lo = Math.min(0, ...results.map((r) => r.lo)) * 100;
+const hi = Math.max(...results.map((r) => r.hi)) * 100;
+const x = (day: number) => 24 + ((day - 1) / (test.days.length - 1)) * 272;
+const y = (value: number) => 176 - ((value - lo) / (hi - lo)) * 152;
+const line = (key: 'hi' | 'lift' | 'lo') =>
+  results.map((r, i) => `${i === 0 ? 'M' : 'L'}${x(i + 1)},${y(r[key] * 100)}`);
+const band = `${line('hi').join('')}${line('lo')
+  .reverse()
+  .map((p) => `L${p.slice(1)}`)
+  .join('')}Z`;
+const mde = y(dataset.mde.initial);
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  role="img"
+  aria-label="The lift of a test day by day, with its interval narrowing above the MDE line"
+>
+  <rect
+    x="0.5"
+    y="0.5"
+    width={width - 1}
+    height={height - 1}
+    rx="8"
+    fill="var(--c-surface)"
+    stroke="var(--c-hairline)"
+  ></rect>
+  <path
+    d={band}
+    fill="color-mix(in srgb, var(--c-line) 18%, transparent)"
+    stroke="color-mix(in srgb, var(--c-line) 45%, transparent)"
+  ></path>
+  <line x1="24" x2="296" y1={y(0)} y2={y(0)} stroke="var(--c-text)"></line>
+  <line
+    x1="24"
+    x2="296"
+    y1={mde}
+    y2={mde}
+    stroke="var(--c-a)"
+    stroke-width="2"
+    stroke-dasharray="6 4"
+  ></line>
+  <path
+    d={line('lift').join('')}
+    fill="none"
+    stroke="var(--c-line)"
+    stroke-width="2.5"
+  ></path>
+</svg>

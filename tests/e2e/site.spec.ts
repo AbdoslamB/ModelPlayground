@@ -13,7 +13,7 @@ test('every sidebar link opens its page', async ({ page }, testInfo) => {
   const hrefs = await links.evaluateAll((all) =>
     all.map((a) => a.getAttribute('href') ?? ''),
   );
-  expect(hrefs).toHaveLength(11);
+  expect(hrefs).toHaveLength(12);
   for (const href of hrefs) {
     expect(href.startsWith('/ModelPlayground/models/')).toBe(true);
     const response = await page.request.get(href);

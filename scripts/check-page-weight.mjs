@@ -2,6 +2,8 @@
 // plan's budgets (gzip): model pages ≤ 40 KB JS at first load, other pages
 // ≤ 6 KB JS, and every page ≤ 25 KB CSS. It follows each page's scripts,
 // island components and their imports, so adding models never adds up.
+// A/B Testing is a seven-step story rather than one Lab, so the owner gave
+// it its own JS budget (26 Oct 2026).
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { gzipSync } from 'node:zlib';
@@ -9,6 +11,8 @@ import { gzipSync } from 'node:zlib';
 const root = 'dist';
 const base = '/ModelPlayground/';
 const budgets = { modelJs: 40, otherJs: 6, css: 25 };
+/** Pages with their own JS budget (KB, gzip). */
+const pageJs = { '/models/a-b-testing/index.html': 50 };
 
 function pages(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -66,7 +70,7 @@ for (const page of pages(root)) {
   const cssBytes = css + inlineCss;
 
   const isModel = html.includes('<astro-island');
-  const jsLimit = isModel ? budgets.modelJs : budgets.otherJs;
+  const jsLimit = pageJs[name] ?? (isModel ? budgets.modelJs : budgets.otherJs);
   const line = `${name}: JS ${kb(jsBytes)} KB (≤ ${jsLimit}), CSS ${kb(cssBytes)} KB (≤ ${budgets.css})`;
   if (jsBytes > jsLimit * 1024 || cssBytes > budgets.css * 1024)
     problems.push(line);

@@ -1,0 +1,86 @@
+---
+// Below the story: the framework in short, and what the data is. The seven
+// steps above carry the explanation; this is the recap. Static HTML.
+import { formatNumber } from '../../lib/format';
+import { datasets } from './data';
+import { share } from './math';
+
+const dataset = datasets[0];
+if (!dataset) throw new Error('A/B Testing has no data');
+const { mean, sd } = dataset.history;
+---
+
+<div class="explain">
+  <section aria-labelledby="ab-summary">
+    <h2 id="ab-summary">A/B testing in short</h2>
+    <ol class="steps">
+      <li>
+        <strong>Ask</strong> one question, and randomize only the people the
+        change can reach.
+      </li>
+      <li>
+        <strong>Measure</strong> one metric tied to the goal, plus guardrails
+        that must not get worse.
+      </li>
+      <li>
+        <strong>Sign</strong> the contract first: α, power and the MDE, and from
+        them the users and the days, in whole weeks.
+      </li>
+      <li>
+        <strong>Run</strong> an A/A test, then the full plan, without stopping
+        early.
+      </li>
+      <li>
+        <strong>Check</strong> the split, outside events and novelty before
+        trusting any p-value.
+      </li>
+      <li>
+        <strong>Read</strong> the interval against 0 and the MDE, not just the
+        p-value.
+      </li>
+      <li>
+        <strong>Decide</strong>, and make sure the lift pays for itself.
+      </li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="ab-data">
+    <h2 id="ab-data">About the data</h2>
+    <p>
+      StylePulse and its numbers are made up, but they behave like a real
+      shop’s: on a usual day {share(dataset.buyRate, 0)} of searchers buy
+      something, so most spend $0, and spend per searcher averages{' '}
+      {`$${formatNumber(mean, 2)}`} with a standard deviation of{' '}
+      {`$${formatNumber(sd, 2)}`}. Each test was simulated searcher by searcher;
+      the page gets each day’s totals for each group, which is all the test
+      needs. Each searcher-day counts on its own here; real analyses group a
+      person’s days together.
+    </p>
+  </section>
+</div>
+
+<style>
+  .explain {
+    display: grid;
+    gap: var(--s-12);
+    max-width: 68ch;
+    font-size: var(--fs-16);
+    line-height: 1.8;
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h2 {
+    font-size: var(--fs-24);
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding-inline-start: 1.4em;
+  }
+</style>

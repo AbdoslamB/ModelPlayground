@@ -2,6 +2,7 @@ export type Category =
   | 'Classification'
   | 'Clustering'
   | 'Dimensionality reduction'
+  | 'Experiments'
   | 'Regression'
   | 'Reinforcement learning'
   | 'Sequence models';
@@ -14,6 +15,7 @@ export const categories: readonly Category[] = [
   'Dimensionality reduction',
   'Sequence models',
   'Reinforcement learning',
+  'Experiments',
 ];
 
 export interface ModelMeta {

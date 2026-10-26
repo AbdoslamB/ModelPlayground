@@ -69,11 +69,11 @@ test('every model’s Plain Python or NumPy program runs in the browser', async 
   for (const slug of readySlugs()) {
     await openLab(page, `models/${slug}/`);
     await openPython(page);
-    // The tab that is not scikit-learn: Plain Python, or NumPy.
+    // The tab that is not scikit-learn or SciPy: Plain Python, or NumPy.
     const tab = page
       .locator('.py')
       .getByRole('tab')
-      .filter({ hasNotText: 'scikit-learn' })
+      .filter({ hasNotText: /scikit-learn|SciPy/ })
       .first();
     await tab.click();
     await page.locator('.py').getByRole('button', { name: 'Run' }).click();

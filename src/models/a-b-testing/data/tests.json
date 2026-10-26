@@ -1,0 +1,1747 @@
+{
+ "id": "stylepulse",
+ "title": "StylePulse tests RankNet-v2",
+ "question": "Should StylePulse launch its new search ranking?",
+ "note": "The shop and its numbers are made up, but they behave like real shop data: most searchers spend $0.",
+ "searchersPerDay": 100000,
+ "buyRate": 0.08,
+ "history": {
+  "mean": 5.0,
+  "sd": 20.0
+ },
+ "splitLimit": 0.001,
+ "limits": {
+  "latency": 10.0,
+  "errors": 0.1
+ },
+ "aa": {
+  "seed": 2026,
+  "tests": 10000,
+  "paths": 20
+ },
+ "day": {
+  "min": 1,
+  "max": 14,
+  "step": 1,
+  "initial": 1
+ },
+ "mde": {
+  "min": 0.5,
+  "max": 5,
+  "step": 0.5,
+  "initial": 2.0
+ },
+ "alpha": {
+  "min": 0.01,
+  "max": 0.1,
+  "step": 0.01,
+  "initial": 0.05
+ },
+ "power": {
+  "min": 0.5,
+  "max": 0.95,
+  "step": 0.05,
+  "initial": 0.8
+ },
+ "cost": {
+  "min": 0,
+  "max": 30000,
+  "step": 500,
+  "initial": 4000
+ },
+ "sample": [
+  {
+   "user": "usr_92135",
+   "day": 1,
+   "group": "treatment",
+   "spent": 0.0,
+   "latency": 178
+  },
+  {
+   "user": "usr_83481",
+   "day": 5,
+   "group": "control",
+   "spent": 0.0,
+   "latency": 149
+  },
+  {
+   "user": "usr_74835",
+   "day": 6,
+   "group": "control",
+   "spent": 68.12,
+   "latency": 89
+  },
+  {
+   "user": "usr_62045",
+   "day": 11,
+   "group": "control",
+   "spent": 0.0,
+   "latency": 118
+  },
+  {
+   "user": "usr_97246",
+   "day": 13,
+   "group": "treatment",
+   "spent": 82.02,
+   "latency": 170
+  }
+ ],
+ "tests": [
+  {
+   "id": "aa",
+   "title": "A/A test",
+   "story": "Before testing RankNet-v2, StylePulse shows the old ranking to both groups, to check the setup.",
+   "truth": "Nothing changed: both groups saw the old ranking.",
+   "note": "As expected: nothing changed, so the setup works.",
+   "seed": 213,
+   "days": [
+    {
+     "day": 1,
+     "control": {
+      "n": 50117,
+      "mean": 4.907992,
+      "sd": 19.734804,
+      "buyers": 3970,
+      "errors": 25,
+      "latency": 139.5
+     },
+     "treatment": {
+      "n": 50021,
+      "mean": 5.006796,
+      "sd": 19.984626,
+      "buyers": 4027,
+      "errors": 19,
+      "latency": 139.6
+     }
+    },
+    {
+     "day": 2,
+     "control": {
+      "n": 49809,
+      "mean": 4.792246,
+      "sd": 19.345156,
+      "buyers": 3898,
+      "errors": 22,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 49756,
+      "mean": 4.895187,
+      "sd": 19.770637,
+      "buyers": 3885,
+      "errors": 18,
+      "latency": 139.5
+     }
+    },
+    {
+     "day": 3,
+     "control": {
+      "n": 49819,
+      "mean": 4.860172,
+      "sd": 19.560864,
+      "buyers": 3899,
+      "errors": 19,
+      "latency": 140.7
+     },
+     "treatment": {
+      "n": 49749,
+      "mean": 5.143031,
+      "sd": 20.374308,
+      "buyers": 4037,
+      "errors": 17,
+      "latency": 139.7
+     }
+    },
+    {
+     "day": 4,
+     "control": {
+      "n": 50195,
+      "mean": 5.094505,
+      "sd": 20.317363,
+      "buyers": 4063,
+      "errors": 17,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 50251,
+      "mean": 5.015313,
+      "sd": 19.862282,
+      "buyers": 4064,
+      "errors": 20,
+      "latency": 140.2
+     }
+    },
+    {
+     "day": 5,
+     "control": {
+      "n": 49828,
+      "mean": 5.038178,
+      "sd": 20.082824,
+      "buyers": 3987,
+      "errors": 16,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 50032,
+      "mean": 5.014171,
+      "sd": 20.147708,
+      "buyers": 3989,
+      "errors": 18,
+      "latency": 140.5
+     }
+    },
+    {
+     "day": 6,
+     "control": {
+      "n": 50170,
+      "mean": 5.075853,
+      "sd": 20.116551,
+      "buyers": 4056,
+      "errors": 12,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 49874,
+      "mean": 5.056717,
+      "sd": 20.202304,
+      "buyers": 3988,
+      "errors": 10,
+      "latency": 139.5
+     }
+    },
+    {
+     "day": 7,
+     "control": {
+      "n": 50063,
+      "mean": 4.992249,
+      "sd": 20.01685,
+      "buyers": 3997,
+      "errors": 12,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 50018,
+      "mean": 4.894988,
+      "sd": 19.617823,
+      "buyers": 3959,
+      "errors": 9,
+      "latency": 139.8
+     }
+    },
+    {
+     "day": 8,
+     "control": {
+      "n": 49781,
+      "mean": 4.962994,
+      "sd": 19.953736,
+      "buyers": 3963,
+      "errors": 18,
+      "latency": 140.5
+     },
+     "treatment": {
+      "n": 50159,
+      "mean": 5.004478,
+      "sd": 19.934469,
+      "buyers": 4012,
+      "errors": 12,
+      "latency": 139.5
+     }
+    },
+    {
+     "day": 9,
+     "control": {
+      "n": 50035,
+      "mean": 5.075052,
+      "sd": 20.035222,
+      "buyers": 4076,
+      "errors": 17,
+      "latency": 140.1
+     },
+     "treatment": {
+      "n": 50316,
+      "mean": 4.909993,
+      "sd": 19.570322,
+      "buyers": 4055,
+      "errors": 15,
+      "latency": 140.1
+     }
+    },
+    {
+     "day": 10,
+     "control": {
+      "n": 49984,
+      "mean": 5.087253,
+      "sd": 20.247786,
+      "buyers": 4050,
+      "errors": 16,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50187,
+      "mean": 4.909421,
+      "sd": 19.835412,
+      "buyers": 3996,
+      "errors": 18,
+      "latency": 140.0
+     }
+    },
+    {
+     "day": 11,
+     "control": {
+      "n": 49771,
+      "mean": 4.928533,
+      "sd": 19.630795,
+      "buyers": 3962,
+      "errors": 8,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 49791,
+      "mean": 5.05465,
+      "sd": 20.267616,
+      "buyers": 3973,
+      "errors": 11,
+      "latency": 139.8
+     }
+    },
+    {
+     "day": 12,
+     "control": {
+      "n": 50363,
+      "mean": 5.066636,
+      "sd": 20.09279,
+      "buyers": 4077,
+      "errors": 19,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 50077,
+      "mean": 5.132763,
+      "sd": 20.415484,
+      "buyers": 4026,
+      "errors": 14,
+      "latency": 140.5
+     }
+    },
+    {
+     "day": 13,
+     "control": {
+      "n": 50066,
+      "mean": 5.207314,
+      "sd": 20.454709,
+      "buyers": 4159,
+      "errors": 16,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 49743,
+      "mean": 4.96583,
+      "sd": 20.025758,
+      "buyers": 3953,
+      "errors": 32,
+      "latency": 139.9
+     }
+    },
+    {
+     "day": 14,
+     "control": {
+      "n": 50201,
+      "mean": 4.978171,
+      "sd": 20.053978,
+      "buyers": 3996,
+      "errors": 14,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 49976,
+      "mean": 4.968598,
+      "sd": 20.159021,
+      "buyers": 3955,
+      "errors": 10,
+      "latency": 140.0
+     }
+    }
+   ]
+  },
+  {
+   "id": "win",
+   "title": "Clear win",
+   "story": "RankNet-v2 against the old ranking, on two ordinary weeks.",
+   "truth": "RankNet-v2 made 4% more searchers buy something.",
+   "note": "",
+   "seed": 200,
+   "days": [
+    {
+     "day": 1,
+     "control": {
+      "n": 50019,
+      "mean": 4.994386,
+      "sd": 20.000867,
+      "buyers": 4029,
+      "errors": 21,
+      "latency": 140.0
+     },
+     "treatment": {
+      "n": 50115,
+      "mean": 5.279886,
+      "sd": 20.551925,
+      "buyers": 4232,
+      "errors": 9,
+      "latency": 144.2
+     }
+    },
+    {
+     "day": 2,
+     "control": {
+      "n": 49735,
+      "mean": 5.074956,
+      "sd": 20.171142,
+      "buyers": 4029,
+      "errors": 18,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 50412,
+      "mean": 5.204131,
+      "sd": 20.433565,
+      "buyers": 4175,
+      "errors": 20,
+      "latency": 144.6
+     }
+    },
+    {
+     "day": 3,
+     "control": {
+      "n": 50166,
+      "mean": 4.890147,
+      "sd": 19.806379,
+      "buyers": 3941,
+      "errors": 19,
+      "latency": 140.9
+     },
+     "treatment": {
+      "n": 49979,
+      "mean": 5.146384,
+      "sd": 20.337705,
+      "buyers": 4089,
+      "errors": 24,
+      "latency": 143.9
+     }
+    },
+    {
+     "day": 4,
+     "control": {
+      "n": 50342,
+      "mean": 5.125117,
+      "sd": 20.211356,
+      "buyers": 4113,
+      "errors": 19,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 50054,
+      "mean": 5.061496,
+      "sd": 20.079975,
+      "buyers": 4053,
+      "errors": 19,
+      "latency": 144.4
+     }
+    },
+    {
+     "day": 5,
+     "control": {
+      "n": 50445,
+      "mean": 4.904135,
+      "sd": 19.887662,
+      "buyers": 3964,
+      "errors": 17,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50024,
+      "mean": 5.339559,
+      "sd": 20.587129,
+      "buyers": 4261,
+      "errors": 18,
+      "latency": 144.6
+     }
+    },
+    {
+     "day": 6,
+     "control": {
+      "n": 49821,
+      "mean": 4.889543,
+      "sd": 19.720352,
+      "buyers": 3937,
+      "errors": 14,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50033,
+      "mean": 4.981394,
+      "sd": 19.726797,
+      "buyers": 4077,
+      "errors": 9,
+      "latency": 144.0
+     }
+    },
+    {
+     "day": 7,
+     "control": {
+      "n": 49734,
+      "mean": 5.052099,
+      "sd": 20.201282,
+      "buyers": 4042,
+      "errors": 19,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 49672,
+      "mean": 5.134385,
+      "sd": 20.123991,
+      "buyers": 4128,
+      "errors": 16,
+      "latency": 144.0
+     }
+    },
+    {
+     "day": 8,
+     "control": {
+      "n": 49801,
+      "mean": 5.169445,
+      "sd": 20.268718,
+      "buyers": 4118,
+      "errors": 14,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 50101,
+      "mean": 5.212655,
+      "sd": 20.509108,
+      "buyers": 4143,
+      "errors": 16,
+      "latency": 144.3
+     }
+    },
+    {
+     "day": 9,
+     "control": {
+      "n": 50172,
+      "mean": 5.052338,
+      "sd": 20.092545,
+      "buyers": 4040,
+      "errors": 15,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 50261,
+      "mean": 5.227729,
+      "sd": 20.471408,
+      "buyers": 4191,
+      "errors": 24,
+      "latency": 143.8
+     }
+    },
+    {
+     "day": 10,
+     "control": {
+      "n": 50408,
+      "mean": 5.101143,
+      "sd": 20.372566,
+      "buyers": 4028,
+      "errors": 15,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50323,
+      "mean": 5.30796,
+      "sd": 20.565203,
+      "buyers": 4246,
+      "errors": 19,
+      "latency": 143.8
+     }
+    },
+    {
+     "day": 11,
+     "control": {
+      "n": 49837,
+      "mean": 4.830504,
+      "sd": 19.620807,
+      "buyers": 3839,
+      "errors": 13,
+      "latency": 139.3
+     },
+     "treatment": {
+      "n": 49980,
+      "mean": 5.241594,
+      "sd": 20.45758,
+      "buyers": 4211,
+      "errors": 18,
+      "latency": 144.3
+     }
+    },
+    {
+     "day": 12,
+     "control": {
+      "n": 50100,
+      "mean": 4.96963,
+      "sd": 19.897439,
+      "buyers": 4020,
+      "errors": 13,
+      "latency": 139.5
+     },
+     "treatment": {
+      "n": 50078,
+      "mean": 5.152096,
+      "sd": 20.352564,
+      "buyers": 4174,
+      "errors": 14,
+      "latency": 143.5
+     }
+    },
+    {
+     "day": 13,
+     "control": {
+      "n": 49922,
+      "mean": 4.99308,
+      "sd": 19.838346,
+      "buyers": 4024,
+      "errors": 12,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 50091,
+      "mean": 5.121857,
+      "sd": 20.121189,
+      "buyers": 4114,
+      "errors": 18,
+      "latency": 144.2
+     }
+    },
+    {
+     "day": 14,
+     "control": {
+      "n": 49949,
+      "mean": 5.131019,
+      "sd": 20.225647,
+      "buyers": 4075,
+      "errors": 19,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 50062,
+      "mean": 5.268607,
+      "sd": 20.400359,
+      "buyers": 4273,
+      "errors": 16,
+      "latency": 143.3
+     }
+    }
+   ]
+  },
+  {
+   "id": "modest",
+   "title": "Modest lift",
+   "story": "A lighter version of RankNet-v2, on two ordinary weeks.",
+   "truth": "This version made 2% more searchers buy: exactly the MDE.",
+   "note": "",
+   "seed": 300,
+   "days": [
+    {
+     "day": 1,
+     "control": {
+      "n": 50166,
+      "mean": 5.022841,
+      "sd": 20.126947,
+      "buyers": 4006,
+      "errors": 19,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 49991,
+      "mean": 5.162218,
+      "sd": 20.257437,
+      "buyers": 4110,
+      "errors": 12,
+      "latency": 143.8
+     }
+    },
+    {
+     "day": 2,
+     "control": {
+      "n": 50090,
+      "mean": 4.970379,
+      "sd": 19.932615,
+      "buyers": 3983,
+      "errors": 16,
+      "latency": 139.6
+     },
+     "treatment": {
+      "n": 50025,
+      "mean": 5.119006,
+      "sd": 20.106984,
+      "buyers": 4089,
+      "errors": 17,
+      "latency": 143.9
+     }
+    },
+    {
+     "day": 3,
+     "control": {
+      "n": 49568,
+      "mean": 5.061604,
+      "sd": 19.95712,
+      "buyers": 4078,
+      "errors": 18,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 49827,
+      "mean": 5.201982,
+      "sd": 20.444535,
+      "buyers": 4113,
+      "errors": 15,
+      "latency": 144.2
+     }
+    },
+    {
+     "day": 4,
+     "control": {
+      "n": 50104,
+      "mean": 5.02967,
+      "sd": 20.209768,
+      "buyers": 3978,
+      "errors": 14,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 49887,
+      "mean": 5.059797,
+      "sd": 20.050759,
+      "buyers": 4050,
+      "errors": 11,
+      "latency": 144.2
+     }
+    },
+    {
+     "day": 5,
+     "control": {
+      "n": 49972,
+      "mean": 4.971278,
+      "sd": 20.084098,
+      "buyers": 3970,
+      "errors": 12,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 49897,
+      "mean": 4.956481,
+      "sd": 19.624007,
+      "buyers": 4033,
+      "errors": 8,
+      "latency": 144.7
+     }
+    },
+    {
+     "day": 6,
+     "control": {
+      "n": 50110,
+      "mean": 4.961825,
+      "sd": 19.751546,
+      "buyers": 4063,
+      "errors": 21,
+      "latency": 139.0
+     },
+     "treatment": {
+      "n": 50238,
+      "mean": 5.047945,
+      "sd": 20.014722,
+      "buyers": 4049,
+      "errors": 16,
+      "latency": 144.2
+     }
+    },
+    {
+     "day": 7,
+     "control": {
+      "n": 50296,
+      "mean": 4.982821,
+      "sd": 19.87496,
+      "buyers": 4038,
+      "errors": 12,
+      "latency": 140.0
+     },
+     "treatment": {
+      "n": 49992,
+      "mean": 5.265615,
+      "sd": 20.637054,
+      "buyers": 4160,
+      "errors": 13,
+      "latency": 143.6
+     }
+    },
+    {
+     "day": 8,
+     "control": {
+      "n": 50083,
+      "mean": 5.041348,
+      "sd": 20.29294,
+      "buyers": 4008,
+      "errors": 23,
+      "latency": 140.8
+     },
+     "treatment": {
+      "n": 49783,
+      "mean": 5.224498,
+      "sd": 20.5216,
+      "buyers": 4116,
+      "errors": 14,
+      "latency": 143.7
+     }
+    },
+    {
+     "day": 9,
+     "control": {
+      "n": 49978,
+      "mean": 5.055638,
+      "sd": 20.271909,
+      "buyers": 3997,
+      "errors": 9,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 49939,
+      "mean": 5.12551,
+      "sd": 20.194826,
+      "buyers": 4080,
+      "errors": 14,
+      "latency": 144.4
+     }
+    },
+    {
+     "day": 10,
+     "control": {
+      "n": 49846,
+      "mean": 5.016339,
+      "sd": 20.053357,
+      "buyers": 4032,
+      "errors": 17,
+      "latency": 139.6
+     },
+     "treatment": {
+      "n": 49725,
+      "mean": 5.082524,
+      "sd": 19.980883,
+      "buyers": 4095,
+      "errors": 18,
+      "latency": 143.7
+     }
+    },
+    {
+     "day": 11,
+     "control": {
+      "n": 49506,
+      "mean": 4.972649,
+      "sd": 19.908954,
+      "buyers": 3955,
+      "errors": 16,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 49823,
+      "mean": 4.999102,
+      "sd": 19.936844,
+      "buyers": 4004,
+      "errors": 15,
+      "latency": 144.1
+     }
+    },
+    {
+     "day": 12,
+     "control": {
+      "n": 50055,
+      "mean": 4.95242,
+      "sd": 20.00982,
+      "buyers": 3996,
+      "errors": 17,
+      "latency": 140.6
+     },
+     "treatment": {
+      "n": 49853,
+      "mean": 5.08744,
+      "sd": 20.297173,
+      "buyers": 4031,
+      "errors": 7,
+      "latency": 143.7
+     }
+    },
+    {
+     "day": 13,
+     "control": {
+      "n": 50047,
+      "mean": 4.850389,
+      "sd": 19.625014,
+      "buyers": 3952,
+      "errors": 15,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 49887,
+      "mean": 5.148963,
+      "sd": 20.227129,
+      "buyers": 4105,
+      "errors": 18,
+      "latency": 143.7
+     }
+    },
+    {
+     "day": 14,
+     "control": {
+      "n": 49509,
+      "mean": 5.090386,
+      "sd": 20.438127,
+      "buyers": 3977,
+      "errors": 7,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 49852,
+      "mean": 5.039318,
+      "sd": 20.005529,
+      "buyers": 4083,
+      "errors": 10,
+      "latency": 144.2
+     }
+    }
+   ]
+  },
+  {
+   "id": "holiday",
+   "title": "Holiday rush",
+   "story": "RankNet-v2 again, but Black Friday falls in week 2.",
+   "truth": "A real +2% lift, but in week 2 more people bought, with much bigger and more varied baskets.",
+   "note": "Black Friday made spending far noisier in week 2.",
+   "seed": 400,
+   "days": [
+    {
+     "day": 1,
+     "control": {
+      "n": 49949,
+      "mean": 4.998095,
+      "sd": 19.859068,
+      "buyers": 4023,
+      "errors": 15,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 49750,
+      "mean": 5.051625,
+      "sd": 20.184695,
+      "buyers": 4015,
+      "errors": 15,
+      "latency": 143.6
+     }
+    },
+    {
+     "day": 2,
+     "control": {
+      "n": 49776,
+      "mean": 5.098992,
+      "sd": 20.112325,
+      "buyers": 4085,
+      "errors": 20,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 49683,
+      "mean": 5.181903,
+      "sd": 20.599016,
+      "buyers": 4082,
+      "errors": 16,
+      "latency": 143.6
+     }
+    },
+    {
+     "day": 3,
+     "control": {
+      "n": 49892,
+      "mean": 4.973476,
+      "sd": 19.829634,
+      "buyers": 3992,
+      "errors": 14,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50021,
+      "mean": 5.050575,
+      "sd": 19.900436,
+      "buyers": 4100,
+      "errors": 17,
+      "latency": 143.9
+     }
+    },
+    {
+     "day": 4,
+     "control": {
+      "n": 49968,
+      "mean": 4.958914,
+      "sd": 19.80246,
+      "buyers": 3978,
+      "errors": 16,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 49688,
+      "mean": 5.081824,
+      "sd": 20.234387,
+      "buyers": 4016,
+      "errors": 14,
+      "latency": 144.1
+     }
+    },
+    {
+     "day": 5,
+     "control": {
+      "n": 50251,
+      "mean": 5.057023,
+      "sd": 20.13033,
+      "buyers": 4031,
+      "errors": 4,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50196,
+      "mean": 5.216168,
+      "sd": 20.28193,
+      "buyers": 4187,
+      "errors": 15,
+      "latency": 143.6
+     }
+    },
+    {
+     "day": 6,
+     "control": {
+      "n": 50105,
+      "mean": 5.082979,
+      "sd": 20.186564,
+      "buyers": 4033,
+      "errors": 16,
+      "latency": 139.4
+     },
+     "treatment": {
+      "n": 50102,
+      "mean": 5.124361,
+      "sd": 20.406082,
+      "buyers": 4054,
+      "errors": 16,
+      "latency": 144.4
+     }
+    },
+    {
+     "day": 7,
+     "control": {
+      "n": 49966,
+      "mean": 4.947602,
+      "sd": 19.978705,
+      "buyers": 3944,
+      "errors": 14,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 50191,
+      "mean": 5.130669,
+      "sd": 20.171097,
+      "buyers": 4113,
+      "errors": 14,
+      "latency": 144.4
+     }
+    },
+    {
+     "day": 8,
+     "control": {
+      "n": 50085,
+      "mean": 9.154274,
+      "sd": 46.874771,
+      "buyers": 5488,
+      "errors": 22,
+      "latency": 139.0
+     },
+     "treatment": {
+      "n": 49938,
+      "mean": 9.287844,
+      "sd": 48.108621,
+      "buyers": 5569,
+      "errors": 20,
+      "latency": 144.0
+     }
+    },
+    {
+     "day": 9,
+     "control": {
+      "n": 50122,
+      "mean": 9.659222,
+      "sd": 49.568561,
+      "buyers": 5507,
+      "errors": 20,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 50097,
+      "mean": 9.447045,
+      "sd": 48.532241,
+      "buyers": 5555,
+      "errors": 29,
+      "latency": 143.9
+     }
+    },
+    {
+     "day": 10,
+     "control": {
+      "n": 49866,
+      "mean": 9.293847,
+      "sd": 48.535893,
+      "buyers": 5518,
+      "errors": 22,
+      "latency": 140.0
+     },
+     "treatment": {
+      "n": 50254,
+      "mean": 9.611304,
+      "sd": 48.745754,
+      "buyers": 5564,
+      "errors": 21,
+      "latency": 144.2
+     }
+    },
+    {
+     "day": 11,
+     "control": {
+      "n": 49930,
+      "mean": 10.022746,
+      "sd": 50.033438,
+      "buyers": 5667,
+      "errors": 19,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 50152,
+      "mean": 9.53548,
+      "sd": 49.02972,
+      "buyers": 5578,
+      "errors": 20,
+      "latency": 143.9
+     }
+    },
+    {
+     "day": 12,
+     "control": {
+      "n": 50083,
+      "mean": 8.920251,
+      "sd": 45.852601,
+      "buyers": 5361,
+      "errors": 18,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 50261,
+      "mean": 9.088947,
+      "sd": 45.613931,
+      "buyers": 5617,
+      "errors": 26,
+      "latency": 143.6
+     }
+    },
+    {
+     "day": 13,
+     "control": {
+      "n": 50314,
+      "mean": 9.130188,
+      "sd": 47.078153,
+      "buyers": 5317,
+      "errors": 20,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 50026,
+      "mean": 9.354327,
+      "sd": 47.873895,
+      "buyers": 5551,
+      "errors": 25,
+      "latency": 144.5
+     }
+    },
+    {
+     "day": 14,
+     "control": {
+      "n": 50107,
+      "mean": 9.059204,
+      "sd": 45.718105,
+      "buyers": 5537,
+      "errors": 29,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 50567,
+      "mean": 9.767098,
+      "sd": 48.527208,
+      "buyers": 5695,
+      "errors": 31,
+      "latency": 143.9
+     }
+    }
+   ]
+  },
+  {
+   "id": "bug",
+   "title": "Tracking bug",
+   "story": "RankNet-v2, but its new page crashes on old Android phones.",
+   "truth": "No real effect. Half the old-Android users in treatment were never logged, and they buy less.",
+   "note": "The missing users were the ones who buy least, so the lift is fake.",
+   "seed": 500,
+   "days": [
+    {
+     "day": 1,
+     "control": {
+      "n": 50183,
+      "mean": 4.934466,
+      "sd": 19.835183,
+      "buyers": 3999,
+      "errors": 20,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 44845,
+      "mean": 5.280164,
+      "sd": 20.435949,
+      "buyers": 3842,
+      "errors": 17,
+      "latency": 177.6
+     }
+    },
+    {
+     "day": 2,
+     "control": {
+      "n": 50184,
+      "mean": 5.064674,
+      "sd": 20.225939,
+      "buyers": 4067,
+      "errors": 23,
+      "latency": 140.0
+     },
+     "treatment": {
+      "n": 44868,
+      "mean": 5.213772,
+      "sd": 20.181159,
+      "buyers": 3811,
+      "errors": 7,
+      "latency": 178.0
+     }
+    },
+    {
+     "day": 3,
+     "control": {
+      "n": 49862,
+      "mean": 5.027876,
+      "sd": 19.988143,
+      "buyers": 4021,
+      "errors": 16,
+      "latency": 139.6
+     },
+     "treatment": {
+      "n": 45116,
+      "mean": 5.413028,
+      "sd": 20.793385,
+      "buyers": 3899,
+      "errors": 11,
+      "latency": 178.1
+     }
+    },
+    {
+     "day": 4,
+     "control": {
+      "n": 50174,
+      "mean": 5.013353,
+      "sd": 19.896248,
+      "buyers": 4037,
+      "errors": 20,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 44939,
+      "mean": 5.285438,
+      "sd": 20.440382,
+      "buyers": 3825,
+      "errors": 12,
+      "latency": 177.9
+     }
+    },
+    {
+     "day": 5,
+     "control": {
+      "n": 49904,
+      "mean": 5.030043,
+      "sd": 20.129843,
+      "buyers": 4037,
+      "errors": 15,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 45062,
+      "mean": 5.46719,
+      "sd": 20.839523,
+      "buyers": 3916,
+      "errors": 18,
+      "latency": 178.2
+     }
+    },
+    {
+     "day": 6,
+     "control": {
+      "n": 49586,
+      "mean": 5.098816,
+      "sd": 20.131822,
+      "buyers": 4058,
+      "errors": 19,
+      "latency": 139.7
+     },
+     "treatment": {
+      "n": 45007,
+      "mean": 5.449932,
+      "sd": 20.817795,
+      "buyers": 3909,
+      "errors": 17,
+      "latency": 177.9
+     }
+    },
+    {
+     "day": 7,
+     "control": {
+      "n": 50037,
+      "mean": 5.012576,
+      "sd": 20.198772,
+      "buyers": 3994,
+      "errors": 11,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 44804,
+      "mean": 5.34881,
+      "sd": 20.705288,
+      "buyers": 3816,
+      "errors": 11,
+      "latency": 178.1
+     }
+    },
+    {
+     "day": 8,
+     "control": {
+      "n": 49901,
+      "mean": 5.019324,
+      "sd": 19.922727,
+      "buyers": 4014,
+      "errors": 20,
+      "latency": 140.3
+     },
+     "treatment": {
+      "n": 44891,
+      "mean": 5.418379,
+      "sd": 20.827587,
+      "buyers": 3878,
+      "errors": 18,
+      "latency": 178.0
+     }
+    },
+    {
+     "day": 9,
+     "control": {
+      "n": 50301,
+      "mean": 5.053653,
+      "sd": 20.111764,
+      "buyers": 4066,
+      "errors": 15,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 44995,
+      "mean": 5.212629,
+      "sd": 20.236277,
+      "buyers": 3802,
+      "errors": 14,
+      "latency": 177.9
+     }
+    },
+    {
+     "day": 10,
+     "control": {
+      "n": 49649,
+      "mean": 5.045896,
+      "sd": 20.246828,
+      "buyers": 3954,
+      "errors": 16,
+      "latency": 140.1
+     },
+     "treatment": {
+      "n": 44515,
+      "mean": 5.150856,
+      "sd": 20.176878,
+      "buyers": 3709,
+      "errors": 12,
+      "latency": 177.5
+     }
+    },
+    {
+     "day": 11,
+     "control": {
+      "n": 50128,
+      "mean": 5.032905,
+      "sd": 20.161489,
+      "buyers": 4020,
+      "errors": 20,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 45073,
+      "mean": 5.471679,
+      "sd": 20.995753,
+      "buyers": 3914,
+      "errors": 12,
+      "latency": 177.7
+     }
+    },
+    {
+     "day": 12,
+     "control": {
+      "n": 49670,
+      "mean": 5.127642,
+      "sd": 20.218059,
+      "buyers": 4040,
+      "errors": 23,
+      "latency": 140.5
+     },
+     "treatment": {
+      "n": 44804,
+      "mean": 5.280356,
+      "sd": 20.231217,
+      "buyers": 3835,
+      "errors": 17,
+      "latency": 178.5
+     }
+    },
+    {
+     "day": 13,
+     "control": {
+      "n": 50266,
+      "mean": 5.166729,
+      "sd": 20.478292,
+      "buyers": 4080,
+      "errors": 23,
+      "latency": 139.3
+     },
+     "treatment": {
+      "n": 44790,
+      "mean": 5.246308,
+      "sd": 20.329187,
+      "buyers": 3781,
+      "errors": 13,
+      "latency": 177.5
+     }
+    },
+    {
+     "day": 14,
+     "control": {
+      "n": 49968,
+      "mean": 5.053356,
+      "sd": 19.997293,
+      "buyers": 4073,
+      "errors": 13,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 44700,
+      "mean": 5.498655,
+      "sd": 21.067884,
+      "buyers": 3916,
+      "errors": 17,
+      "latency": 178.1
+     }
+    }
+   ]
+  },
+  {
+   "id": "novelty",
+   "title": "Novelty",
+   "story": "A flashy redesign of the results page.",
+   "truth": "People clicked around at first: +8% on day 1, fading to under 1% by week 2.",
+   "note": "",
+   "seed": 603,
+   "days": [
+    {
+     "day": 1,
+     "control": {
+      "n": 49795,
+      "mean": 4.805423,
+      "sd": 19.546273,
+      "buyers": 3862,
+      "errors": 14,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 49903,
+      "mean": 5.410841,
+      "sd": 20.759337,
+      "buyers": 4312,
+      "errors": 19,
+      "latency": 143.6
+     }
+    },
+    {
+     "day": 2,
+     "control": {
+      "n": 50131,
+      "mean": 5.081136,
+      "sd": 20.02626,
+      "buyers": 4121,
+      "errors": 26,
+      "latency": 139.8
+     },
+     "treatment": {
+      "n": 50070,
+      "mean": 5.427567,
+      "sd": 20.92861,
+      "buyers": 4289,
+      "errors": 23,
+      "latency": 143.7
+     }
+    },
+    {
+     "day": 3,
+     "control": {
+      "n": 50030,
+      "mean": 5.040458,
+      "sd": 20.176046,
+      "buyers": 4009,
+      "errors": 15,
+      "latency": 140.1
+     },
+     "treatment": {
+      "n": 50303,
+      "mean": 5.219207,
+      "sd": 20.351343,
+      "buyers": 4217,
+      "errors": 15,
+      "latency": 144.3
+     }
+    },
+    {
+     "day": 4,
+     "control": {
+      "n": 50281,
+      "mean": 4.967149,
+      "sd": 19.88335,
+      "buyers": 4041,
+      "errors": 21,
+      "latency": 139.3
+     },
+     "treatment": {
+      "n": 49998,
+      "mean": 5.163757,
+      "sd": 20.056976,
+      "buyers": 4174,
+      "errors": 18,
+      "latency": 143.3
+     }
+    },
+    {
+     "day": 5,
+     "control": {
+      "n": 50243,
+      "mean": 4.883457,
+      "sd": 19.622829,
+      "buyers": 3919,
+      "errors": 13,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 50130,
+      "mean": 5.201136,
+      "sd": 20.15731,
+      "buyers": 4232,
+      "errors": 20,
+      "latency": 143.3
+     }
+    },
+    {
+     "day": 6,
+     "control": {
+      "n": 50040,
+      "mean": 5.029345,
+      "sd": 20.000111,
+      "buyers": 3989,
+      "errors": 18,
+      "latency": 139.6
+     },
+     "treatment": {
+      "n": 49763,
+      "mean": 5.145317,
+      "sd": 20.136956,
+      "buyers": 4145,
+      "errors": 17,
+      "latency": 144.8
+     }
+    },
+    {
+     "day": 7,
+     "control": {
+      "n": 49682,
+      "mean": 4.889643,
+      "sd": 19.733569,
+      "buyers": 3920,
+      "errors": 13,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 49701,
+      "mean": 5.148799,
+      "sd": 20.234292,
+      "buyers": 4082,
+      "errors": 13,
+      "latency": 144.3
+     }
+    },
+    {
+     "day": 8,
+     "control": {
+      "n": 49969,
+      "mean": 5.131509,
+      "sd": 20.428899,
+      "buyers": 4048,
+      "errors": 16,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 49909,
+      "mean": 5.085043,
+      "sd": 20.320542,
+      "buyers": 4038,
+      "errors": 16,
+      "latency": 143.8
+     }
+    },
+    {
+     "day": 9,
+     "control": {
+      "n": 49826,
+      "mean": 5.027375,
+      "sd": 19.909857,
+      "buyers": 4014,
+      "errors": 11,
+      "latency": 139.9
+     },
+     "treatment": {
+      "n": 49739,
+      "mean": 5.036674,
+      "sd": 20.39466,
+      "buyers": 3928,
+      "errors": 24,
+      "latency": 143.8
+     }
+    },
+    {
+     "day": 10,
+     "control": {
+      "n": 49922,
+      "mean": 5.119429,
+      "sd": 20.639237,
+      "buyers": 3989,
+      "errors": 21,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 50291,
+      "mean": 4.9189,
+      "sd": 19.676427,
+      "buyers": 3977,
+      "errors": 9,
+      "latency": 144.4
+     }
+    },
+    {
+     "day": 11,
+     "control": {
+      "n": 49976,
+      "mean": 5.063556,
+      "sd": 20.123302,
+      "buyers": 4030,
+      "errors": 26,
+      "latency": 140.2
+     },
+     "treatment": {
+      "n": 49917,
+      "mean": 5.184859,
+      "sd": 20.397341,
+      "buyers": 4129,
+      "errors": 20,
+      "latency": 144.5
+     }
+    },
+    {
+     "day": 12,
+     "control": {
+      "n": 49540,
+      "mean": 4.974195,
+      "sd": 19.914688,
+      "buyers": 3947,
+      "errors": 15,
+      "latency": 140.0
+     },
+     "treatment": {
+      "n": 49717,
+      "mean": 5.046766,
+      "sd": 20.090193,
+      "buyers": 4018,
+      "errors": 14,
+      "latency": 144.3
+     }
+    },
+    {
+     "day": 13,
+     "control": {
+      "n": 50037,
+      "mean": 4.826677,
+      "sd": 19.643852,
+      "buyers": 3866,
+      "errors": 15,
+      "latency": 140.4
+     },
+     "treatment": {
+      "n": 49989,
+      "mean": 4.994295,
+      "sd": 20.123337,
+      "buyers": 3959,
+      "errors": 19,
+      "latency": 144.1
+     }
+    },
+    {
+     "day": 14,
+     "control": {
+      "n": 49843,
+      "mean": 5.203155,
+      "sd": 20.698582,
+      "buyers": 4048,
+      "errors": 15,
+      "latency": 140.7
+     },
+     "treatment": {
+      "n": 49945,
+      "mean": 5.000324,
+      "sd": 20.054785,
+      "buyers": 4004,
+      "errors": 17,
+      "latency": 144.6
+     }
+    }
+   ]
+  }
+ ]
+}
