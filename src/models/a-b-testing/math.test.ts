@@ -9,6 +9,7 @@ import {
   aaRuns,
   ciCase,
   decide,
+  designSe,
   dollars,
   erfc,
   fade,
@@ -20,7 +21,10 @@ import {
   percent,
   plannedDays,
   pText,
+  pValue,
   sampleSize,
+  share,
+  signed,
   splitCheck,
   twoSided,
   welch,
@@ -292,6 +296,61 @@ describe('guardrails, money and text', () => {
     expect(mdeText(0.005)).toBe('0.5%');
     expect(dollars(-1250.4)).toBe('−$1,250');
     expect(dollars(4000)).toBe('$4,000');
+  });
+});
+
+describe('every branch of the verdict and the text', () => {
+  const days = (data.tests[1]?.days ?? []) as Day[];
+  const base = (day: number): DecideInput => {
+    const result = welch(days.slice(0, day), 0.05);
+    return {
+      day,
+      planned: 14,
+      lastDay: 14,
+      alpha: 0.05,
+      mde: 0.02,
+      result,
+      split: splitCheck(result.nC, result.nT),
+      splitLimit: data.splitLimit,
+      guard: guardrails(days.slice(0, day), data.limits),
+      fade: null,
+    };
+  };
+
+  it('too early: a loss, or no clear difference yet', () => {
+    const loss = base(3);
+    loss.result = { ...loss.result, diff: -0.1, lift: -0.02, p: 0.01 };
+    expect(decide(loss).detail).toMatch(
+      /look like a −2\.0% loss \(p = 0\.010\)/,
+    );
+    const unclear = base(3);
+    unclear.result = { ...unclear.result, p: 0.4 };
+    expect(decide(unclear).detail).toMatch(
+      /^So far \+\d\.\d% \(p = 0\.400\): no clear difference yet\.$/,
+    );
+  });
+
+  it('a checkout-error guardrail, and a costly win without a stated cost', () => {
+    const guard = { latency: 2, errors: 0.3, latencyOk: true, errorsOk: false };
+    expect(decide({ ...base(14), guard }).detail).toBe(
+      'Checkout errors rose by 0.30 points.',
+    );
+    const r = base(14).result;
+    const v = decide({ ...base(14), money: money(r, 100000, 1e9) });
+    expect(v.detail).toMatch(/^At \$0 a day, the cautious gain is −\$/);
+  });
+
+  it('formats changes, shares and tiny p-values, and the design SE', () => {
+    expect(signed(4.1, 0)).toBe('+4');
+    expect(signed(-0.023, 2)).toBe('−0.02');
+    expect(signed(0.001, 2)).toBe('0.00');
+    expect(share(0.2121)).toBe('21.2%');
+    expect(share(0.05, 0)).toBe('5%');
+    expect(pValue(1e-9)).toBe('< 0.0001');
+    expect(pValue(0.026)).toBe('0.026');
+    // 20 × √(2 / 50,000) / 5 = 0.0253 after one day; it shrinks as 1/√days.
+    close(designSe(1, 50000, 5, 20), 0.0252982212813, 1e-9);
+    close(designSe(4, 50000, 5, 20), designSe(1, 50000, 5, 20) / 2, 1e-12);
   });
 });
 

@@ -76,16 +76,14 @@ export function erfc(x: number): number {
     return 1 - (2 / SQRT_PI) * Math.exp(-x * x) * sum;
   }
   // erfc(x) = e^(−x²)/√π · 1 / (x + ½ / (x + 1 / (x + 3⁄2 / (x + 2 / …))))
-  const tiny = 1e-300;
+  // With x ≥ 2 every term is positive, so nothing here can divide by 0.
   let f = x;
   let c = x;
   let d = 0;
   for (let k = 1; k < 5000; k++) {
     const a = k / 2;
-    d = x + a * d;
-    d = Math.abs(d) < tiny ? 1 / tiny : 1 / d;
+    d = 1 / (x + a * d);
     c = x + a / c;
-    if (Math.abs(c) < tiny) c = tiny;
     const delta = c * d;
     f *= delta;
     if (Math.abs(delta - 1) < 1e-16) break;
@@ -524,7 +522,7 @@ export function aaRuns(
       if (Math.abs(z) > crit) crossed = true;
     }
     if (crossed) ever += 1;
-    if (Math.abs(path[looks - 1] ?? 0) > crit) end += 1;
+    if (Math.abs(total / Math.sqrt(looks)) > crit) end += 1;
     if (t < keep) paths.push(path);
   }
   return { tests, ever, end, paths };
