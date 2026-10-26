@@ -66,21 +66,22 @@ test('the desktop sidebar collapses, is remembered, and opens again', async ({
   await expect(button).toHaveAccessibleName('Hide the model list');
 });
 
-test('the collapsed rail keeps the logo and the theme switch', async ({
+test('the collapsed rail keeps only the expand button and the theme switch', async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium', 'desktop sidebar');
   await page.goto('models/linear-regression/');
-  await page.locator('[data-collapse-button]').click();
+  const expand = page.locator('[data-collapse-button]');
+  await expand.click();
   const rail = page.locator('#sidebar');
   await expect
     .poll(async () => (await rail.boundingBox())?.width)
     .toBeLessThanOrEqual(64);
 
-  // The logo still leads home; its name is kept for screen readers.
-  const home = rail.getByRole('link', { name: 'Model Playground' });
-  await expect(home).toBeVisible();
-  await expect(home).toHaveAttribute('href', '/ModelPlayground/');
+  // No logo or GitHub link in the rail.
+  await expect(
+    rail.getByRole('link', { name: 'Model Playground' }),
+  ).toBeHidden();
   await expect(rail.getByRole('link', { name: 'GitHub' })).toBeHidden();
 
   // The theme switch works from the rail, as an icon with the same name.
@@ -91,10 +92,9 @@ test('the collapsed rail keeps the logo and the theme switch', async ({
   await expect(theme).not.toHaveAttribute('aria-pressed', pressed ?? '');
   await theme.click();
 
-  // Every icon sits inside the rail: logo and expand button at the top, the
-  // theme switch at the bottom.
+  // Both icons sit inside the rail: expand at the top, theme at the bottom.
   const railBox = await rail.boundingBox();
-  for (const icon of [home, theme, page.locator('[data-collapse-button]')]) {
+  for (const icon of [expand, theme]) {
     const box = await icon.boundingBox();
     expect(box && railBox && box.x + box.width <= railBox.x + 64).toBe(true);
   }
@@ -110,8 +110,9 @@ test('the collapsed rail keeps the logo and the theme switch', async ({
   await page.keyboard.press('Escape');
   await expect(tip).toBeHidden();
   await page.mouse.move(600, 400);
-  await home.focus();
-  await expect(home.locator('.rail-tip')).toBeVisible();
+  await expand.focus();
+  await expect(expand.locator('.rail-tip')).toHaveText('Show the model list');
+  await expect(expand.locator('.rail-tip')).toBeVisible();
 
   // Collapsed, the sidebar still has no axe violations.
   const results = await new AxeBuilder({ page }).include('#sidebar').analyze();

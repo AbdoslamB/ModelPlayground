@@ -99,10 +99,7 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           <div class="sidebar__head">
             <a class="brand" href={url()}>
               <Logo />
-              <span class="brand__name">Model Playground</span>
-              <span class="rail-tip" aria-hidden="true">
-                Model Playground
-              </span>
+              <span>Model Playground</span>
             </a>
             <button
               class="collapse"
@@ -285,7 +282,7 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
       });
 
       // Desktop: the sidebar collapses to a slim rail, and is remembered. The
-      // rail keeps the logo and the theme switch, each with a tooltip.
+      // rail keeps the theme switch; its icons have tooltips.
       const collapseButton = document.querySelector<HTMLButtonElement>(
         '[data-collapse-button]',
       );
@@ -644,18 +641,15 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           grid-template-columns: 64px minmax(0, 1fr);
         }
 
-        /* The rail: the logo and the expand button at the top, the theme
-           switch at the bottom, each an icon with a tooltip. */
+        /* The rail: the expand button at the top, the theme switch at the
+           bottom, each an icon with a tooltip. */
         :global([data-sidebar-collapsed]) .sidebar__inner {
           padding-inline: var(--s-3);
           /* Short enough to fit; lets the tooltips reach past the rail. */
           overflow: visible;
         }
 
-        :global([data-sidebar-collapsed]) .sidebar__head {
-          flex-direction: column;
-        }
-
+        :global([data-sidebar-collapsed]) .brand,
         :global([data-sidebar-collapsed]) .models,
         :global([data-sidebar-collapsed]) .footer-link {
           display: none;
@@ -666,7 +660,6 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           margin-block-start: auto;
         }
 
-        :global([data-sidebar-collapsed]) .brand,
         :global([data-sidebar-collapsed]) .theme-toggle {
           justify-content: center;
           width: 40px;
@@ -674,16 +667,7 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           padding: 0;
         }
 
-        :global([data-sidebar-collapsed]) .brand {
-          border-radius: var(--radius-control);
-        }
-
-        :global([data-sidebar-collapsed]) .brand:hover {
-          background: var(--c-surface-sunken);
-        }
-
-        /* The names stay for screen readers; the tooltips show them. */
-        :global([data-sidebar-collapsed]) .brand__name,
+        /* The name stays for screen readers; the tooltip shows it. */
         :global([data-sidebar-collapsed]) .theme-toggle__label {
           position: absolute;
           width: 1px;
@@ -694,8 +678,7 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           white-space: nowrap;
         }
 
-        :global([data-sidebar-collapsed])
-          :is(.brand, .collapse, .theme-toggle) {
+        :global([data-sidebar-collapsed]) :is(.collapse, .theme-toggle) {
           position: relative;
         }
 
