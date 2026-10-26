@@ -99,13 +99,16 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           <div class="sidebar__head">
             <a class="brand" href={url()}>
               <Logo />
-              <span>Model Playground</span>
+              <span class="brand__name">Model Playground</span>
+              <span class="rail-tip" aria-hidden="true">
+                Model Playground
+              </span>
             </a>
             <button
               class="collapse"
               type="button"
               aria-expanded="true"
-              aria-controls="sidebar-content"
+              aria-controls="sidebar-models"
               data-collapse-button
             >
               <svg
@@ -133,10 +136,13 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
               <span class="visually-hidden" data-collapse-label>
                 Hide the model list
               </span>
+              <span class="rail-tip" aria-hidden="true" data-collapse-tip>
+                Show the model list
+              </span>
             </button>
           </div>
           <div class="sidebar__content" id="sidebar-content">
-            <nav aria-label="Models" class="models">
+            <nav aria-label="Models" class="models" id="sidebar-models">
               {readyGroups.map((group) => (
                 <section class="models__group">
                   <h2 class="models__category">{group.category}</h2>
@@ -213,7 +219,10 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
                     stroke-linejoin="round"
                   ></path>
                 </svg>
-                Dark mode
+                <span class="theme-toggle__label">Dark mode</span>
+                <span class="rail-tip" aria-hidden="true">
+                  Dark mode
+                </span>
               </button>
               <a class="footer-link" href={repoUrl}>
                 GitHub
@@ -275,21 +284,33 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
         if (root.hasAttribute('data-drawer-open')) setDrawer(false);
       });
 
-      // Desktop: the sidebar collapses to a slim rail, and is remembered.
+      // Desktop: the sidebar collapses to a slim rail, and is remembered. The
+      // rail keeps the logo and the theme switch, each with a tooltip.
       const collapseButton = document.querySelector<HTMLButtonElement>(
         '[data-collapse-button]',
       );
       const collapseLabel = document.querySelector<HTMLElement>(
         '[data-collapse-label]',
       );
+      const collapseTip = document.querySelector<HTMLElement>(
+        '[data-collapse-tip]',
+      );
       function showCollapsed() {
         const collapsed = root.hasAttribute('data-sidebar-collapsed');
         collapseButton?.setAttribute('aria-expanded', String(!collapsed));
-        if (collapseLabel) {
-          collapseLabel.textContent = collapsed
-            ? 'Show the model list'
-            : 'Hide the model list';
-        }
+        const label = collapsed ? 'Show the model list' : 'Hide the model list';
+        if (collapseLabel) collapseLabel.textContent = label;
+        if (collapseTip) collapseTip.textContent = label;
+      }
+      // Esc hides the rail's tooltips until the pointer or focus moves on.
+      sidebar?.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape')
+          sidebar.setAttribute('data-tips-hidden', '');
+      });
+      for (const type of ['pointerleave', 'focusout'] as const) {
+        sidebar?.addEventListener(type, () => {
+          sidebar.removeAttribute('data-tips-hidden');
+        });
       }
       collapseButton?.addEventListener('click', () => {
         const collapsed = !root.hasAttribute('data-sidebar-collapsed');
@@ -589,6 +610,11 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
         border-color: var(--c-control-edge);
       }
 
+      /* Tooltips for the collapsed rail's icons; hidden everywhere else. */
+      .rail-tip {
+        display: none;
+      }
+
       .footer-link {
         display: inline-flex;
         align-items: center;
@@ -618,13 +644,87 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
           grid-template-columns: 64px minmax(0, 1fr);
         }
 
+        /* The rail: the logo and the expand button at the top, the theme
+           switch at the bottom, each an icon with a tooltip. */
         :global([data-sidebar-collapsed]) .sidebar__inner {
           padding-inline: var(--s-3);
+          /* Short enough to fit; lets the tooltips reach past the rail. */
+          overflow: visible;
+        }
+
+        :global([data-sidebar-collapsed]) .sidebar__head {
+          flex-direction: column;
+        }
+
+        :global([data-sidebar-collapsed]) .models,
+        :global([data-sidebar-collapsed]) .footer-link {
+          display: none;
+        }
+
+        :global([data-sidebar-collapsed]) .sidebar__footer {
+          justify-content: center;
+          margin-block-start: auto;
         }
 
         :global([data-sidebar-collapsed]) .brand,
-        :global([data-sidebar-collapsed]) .sidebar__content {
-          display: none;
+        :global([data-sidebar-collapsed]) .theme-toggle {
+          justify-content: center;
+          width: 40px;
+          min-height: 40px;
+          padding: 0;
+        }
+
+        :global([data-sidebar-collapsed]) .brand {
+          border-radius: var(--radius-control);
+        }
+
+        :global([data-sidebar-collapsed]) .brand:hover {
+          background: var(--c-surface-sunken);
+        }
+
+        /* The names stay for screen readers; the tooltips show them. */
+        :global([data-sidebar-collapsed]) .brand__name,
+        :global([data-sidebar-collapsed]) .theme-toggle__label {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
+
+        :global([data-sidebar-collapsed])
+          :is(.brand, .collapse, .theme-toggle) {
+          position: relative;
+        }
+
+        :global([data-sidebar-collapsed]) .rail-tip {
+          position: absolute;
+          inset-block-start: 50%;
+          inset-inline-start: calc(100% + var(--s-3));
+          z-index: 5;
+          display: block;
+          padding: var(--s-1) var(--s-2);
+          border-radius: 6px;
+          background: var(--c-text);
+          color: var(--c-bg);
+          font-size: var(--fs-12);
+          font-weight: 600;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-50%);
+          transition: opacity var(--dur-ui);
+          pointer-events: none;
+        }
+
+        :global([data-sidebar-collapsed])
+          .sidebar:not([data-tips-hidden])
+          :is(:hover, :focus-visible)
+          > .rail-tip {
+          opacity: 1;
+          visibility: visible;
         }
 
         .topbar {
@@ -634,6 +734,8 @@ const repoUrl = 'https://github.com/AbdoslamB/ModelPlayground';
         .sidebar {
           position: sticky;
           inset-block-start: 0;
+          /* Above the page, so the rail's tooltips are never covered. */
+          z-index: 10;
           height: 100dvh;
           border-inline-end: 1px solid var(--c-hairline);
         }

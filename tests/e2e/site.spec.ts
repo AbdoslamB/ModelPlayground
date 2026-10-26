@@ -66,6 +66,58 @@ test('the desktop sidebar collapses, is remembered, and opens again', async ({
   await expect(button).toHaveAccessibleName('Hide the model list');
 });
 
+test('the collapsed rail keeps the logo and the theme switch', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'desktop sidebar');
+  await page.goto('models/linear-regression/');
+  await page.locator('[data-collapse-button]').click();
+  const rail = page.locator('#sidebar');
+  await expect
+    .poll(async () => (await rail.boundingBox())?.width)
+    .toBeLessThanOrEqual(64);
+
+  // The logo still leads home; its name is kept for screen readers.
+  const home = rail.getByRole('link', { name: 'Model Playground' });
+  await expect(home).toBeVisible();
+  await expect(home).toHaveAttribute('href', '/ModelPlayground/');
+  await expect(rail.getByRole('link', { name: 'GitHub' })).toBeHidden();
+
+  // The theme switch works from the rail, as an icon with the same name.
+  const theme = rail.getByRole('button', { name: 'Dark mode' });
+  await expect(theme).toBeVisible();
+  const pressed = await theme.getAttribute('aria-pressed');
+  await theme.click();
+  await expect(theme).not.toHaveAttribute('aria-pressed', pressed ?? '');
+  await theme.click();
+
+  // Every icon sits inside the rail: logo and expand button at the top, the
+  // theme switch at the bottom.
+  const railBox = await rail.boundingBox();
+  for (const icon of [home, theme, page.locator('[data-collapse-button]')]) {
+    const box = await icon.boundingBox();
+    expect(box && railBox && box.x + box.width <= railBox.x + 64).toBe(true);
+  }
+  expect((await theme.boundingBox())?.y ?? 0).toBeGreaterThan(
+    (railBox?.height ?? 0) / 2,
+  );
+
+  // A tooltip names each icon on hover and on keyboard focus; Esc hides it.
+  const tip = theme.locator('.rail-tip');
+  await theme.hover();
+  await expect(tip).toBeVisible();
+  await expect(tip).toHaveText('Dark mode');
+  await page.keyboard.press('Escape');
+  await expect(tip).toBeHidden();
+  await page.mouse.move(600, 400);
+  await home.focus();
+  await expect(home.locator('.rail-tip')).toBeVisible();
+
+  // Collapsed, the sidebar still has no axe violations.
+  const results = await new AxeBuilder({ page }).include('#sidebar').analyze();
+  expect(results.violations).toEqual([]);
+});
+
 test('Coming soon pages are not indexed, ready pages are', async ({ page }) => {
   const [soon] = slugsWithStatus('coming-soon');
   if (soon) {
