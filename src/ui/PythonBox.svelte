@@ -1,7 +1,8 @@
 <!--
   "Try it in Python": the Lab's state as short Python programs, which run in
   the browser. Each model passes its programs (one per tab; the first opens
-  first). Collapsed by default, and the choice is remembered. This part is
+  first). Every page opens with it collapsed (on a light gray band); the
+  learner opens and closes it. This part is
   small and on every model page; the tabs, editor and Run (PythonPanel) are
   downloaded only when the section is first opened. Until then, and without
   JavaScript, a plain text box shows the first program.
@@ -12,8 +13,6 @@
   import { onMount } from 'svelte';
 
   import type { PythonProgram } from '../lib/python';
-
-  import { readFlag, writeFlag } from '../lib/storage';
 
   interface Props {
     /** One per tab; with a single program the tab bar is left out. */
@@ -39,9 +38,7 @@
   }
 
   onMount(() => {
-    open = readFlag('python-open') === 'open';
     started = true;
-    if (open) void loadPanel();
   });
 
   const first = $derived(programs[0]?.code ?? '');
@@ -52,7 +49,6 @@
   {open}
   ontoggle={(event) => {
     open = event.currentTarget.open;
-    writeFlag('python-open', open ? 'open' : 'closed');
     if (open) void loadPanel();
   }}
 >
@@ -93,6 +89,17 @@
   .py {
     margin-block-start: var(--s-8);
     border-block: 1px solid var(--c-hairline);
+  }
+
+  /* Collapsed: a light gray band marks it as a section of its own. The band
+     reaches a little past the text on both sides, so the title doesn't move
+     when it opens; open, it is the plain section again. */
+  .py:not([open]) {
+    margin-inline: calc(-1 * var(--s-3));
+    padding-inline: var(--s-3);
+    border-block-color: transparent;
+    border-radius: var(--radius-control);
+    background: var(--c-surface-sunken);
   }
 
   .py__summary {

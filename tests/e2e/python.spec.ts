@@ -9,7 +9,6 @@ const path = 'models/linear-regression/';
 
 /** Opens the Python section and waits for the code editor. */
 async function openPython(page: Page) {
-  // The section remembers being open, so it may already be.
   const open = await page
     .locator('details.py')
     .evaluate((d) => (d as HTMLDetailsElement).open);
@@ -18,6 +17,28 @@ async function openPython(page: Page) {
   await editor.waitFor();
   return editor;
 }
+
+test('every visit starts collapsed, on a light gray band', async ({ page }) => {
+  await openLab(page, path);
+  const box = page.locator('details.py');
+  const background = () =>
+    box.evaluate((d) => getComputedStyle(d).backgroundColor);
+  await expect(box).not.toHaveAttribute('open');
+  const gray = await background();
+  expect(gray).not.toBe('rgba(0, 0, 0, 0)');
+
+  // Opened, it is the plain section again; the title stays where it was.
+  const title = page.locator('.py__summary');
+  const x = (await title.boundingBox())?.x;
+  await title.click();
+  await expect(box).toHaveAttribute('open');
+  expect(await background()).toBe('rgba(0, 0, 0, 0)');
+  expect((await title.boundingBox())?.x).toBe(x);
+
+  // Opening it is not remembered: the next visit starts collapsed again.
+  await page.reload();
+  await expect(box).not.toHaveAttribute('open');
+});
 
 test('the code editor is only downloaded when the section is opened', async ({
   page,
