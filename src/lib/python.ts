@@ -1,7 +1,7 @@
 /**
  * Runs a Python snippet in a worker (see python.worker.ts) and reports its
- * progress. Code that runs longer than the time limit is stopped: the
- * worker is thrown away, and the next run starts a fresh one.
+ * progress. There is no time limit: a run takes as long as the code needs,
+ * and the page stays responsive meanwhile because Python runs in the worker.
  */
 import type { Reply, Request } from './python.worker';
 
@@ -32,14 +32,11 @@ function getWorker(): Worker {
 export function runPython(
   code: string,
   onStatus: (text: string) => void,
-  limitSeconds = 10,
 ): Promise<PythonResult> {
   const id = nextId++;
   const current = getWorker();
   return new Promise((resolve) => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
     const finish = (result: PythonResult) => {
-      clearTimeout(timer);
       current.removeEventListener('message', listen);
       resolve(result);
     };
@@ -48,17 +45,6 @@ export function runPython(
       if (reply.id !== id) return;
       if (reply.kind === 'status') {
         onStatus(reply.text);
-        // Only the code's own running time counts, not the download.
-        if (reply.text === 'Running…') {
-          timer = setTimeout(() => {
-            current.terminate();
-            if (worker === current) worker = null;
-            finish({
-              output: '',
-              error: `Stopped after ${limitSeconds} seconds. Does the code loop forever?`,
-            });
-          }, limitSeconds * 1000);
-        }
         return;
       }
       finish({ output: reply.output, error: reply.error });
