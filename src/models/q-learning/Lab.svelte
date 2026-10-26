@@ -389,7 +389,7 @@
 
 <PythonBox
   programs={python}
-  lead="The Lab's maze, α, γ, ε and training so far, replayed in Python with the Lab's own random numbers, so the Q-values match the Lab's. NumPy keeps the Q-table in an array; Plain Python in lists."
+  lead="The Lab's maze, α, γ, ε and training so far, replayed in Python with the Lab's own random numbers, so the Q-values match the Lab's. It prints the last update, the best path and a map of the best move in every square. NumPy keeps the Q-table in an array; Plain Python in lists."
 />
 
 <style>

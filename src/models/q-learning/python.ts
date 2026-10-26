@@ -64,14 +64,18 @@ def move(cell, action):
 random = mulberry32(${data.seed})`;
 }
 
-/** The same printout for both: the last update, the start square, the path. */
+/**
+ * The same printout for both: the last update, the start square, the path,
+ * and a map of the best move in every square.
+ */
 const report = (
   argmax: string,
 ) => `print(f"Trained {steps} steps: {episode} episodes finished")
 if last:
-    cell, action, before, reward, future = last
+    cell, action, before, reward, future, ended = last
     print(f"Last update: Q({name(cell)}, {ARROWS[action]}) ← {before:.2f} + {alpha:g} × "
-          f"({reward} + {gamma:g} × {future:.2f} − ({before:.2f})) = {Q[cell][action]:.2f}")
+          f"({reward} + {gamma:g} × {future:.2f} − ({before:.2f})) = {Q[cell][action]:.2f}"
+          + ("  (the episode ended there, so its future is 0)" if ended else ""))
 print(f"{name(start)}: Q = " + ", ".join(f"{a} {q:.2f}" for a, q in zip(ARROWS, Q[start])))
 
 # The best path: from the start, always take the best move (the first on a tie)
@@ -82,7 +86,27 @@ while not done and len(path) <= 40:
 if path[-1] == cheese:
     print(f"Best path from the start: {len(path) - 1} steps: " + " → ".join(map(name, path)))
 else:
-    print("Best path from the start: none yet")`;
+    print("Best path from the start: none yet")
+
+# The policy: the best move in every square. Train for longer and watch the
+# arrows spread back from the cheese. Squares the mouse rarely visits learn
+# slowly, so they can still point the wrong way.
+print("Best move in each square (* cheese, X cat, # wall, · not learned yet):")
+print("   " + " ".join("ABCDEFGHIJ"[:columns]))
+for r in range(rows):
+    marks = []
+    for cell in range(r * columns, (r + 1) * columns):
+        if cell == cheese:
+            marks.append("*")
+        elif cell in cats:
+            marks.append("X")
+        elif cell in walls:
+            marks.append("#")
+        elif not any(Q[cell]):
+            marks.append("·")  # all four Q-values are still 0
+        else:
+            marks.append(ARROWS[${argmax}])
+    print(f"{r + 1:>2} " + " ".join(marks))`;
 
 /** With NumPy: the Q-table is an array. */
 export function numpyPython(data: PythonData): string {
@@ -102,7 +126,7 @@ for _ in range(steps):
     before = Q[position, action]
     # Q(s, a) ← Q(s, a) + α [r + γ maxₐ′ Q(s′, a′) − Q(s, a)]
     Q[position, action] = before + alpha * (reward + gamma * future - before)
-    last = (position, action, before, reward, future)
+    last = (position, action, before, reward, future, done)
     moves += 1
     position = nxt
     if done or moves >= max_moves:
@@ -129,7 +153,7 @@ for _ in range(steps):
     before = Q[position][action]
     # Q(s, a) ← Q(s, a) + α [r + γ maxₐ′ Q(s′, a′) − Q(s, a)]
     Q[position][action] = before + alpha * (reward + gamma * future - before)
-    last = (position, action, before, reward, future)
+    last = (position, action, before, reward, future, done)
     moves += 1
     position = nxt
     if done or moves >= max_moves:

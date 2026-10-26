@@ -73,6 +73,10 @@ function check(out: string, d: PythonData) {
     near(before, t.last.before);
     near(future, t.last.future);
     near(after, t.last.after);
+    // Said only when the future is 0 because the episode ended.
+    expect(printed[at - 1]?.includes('the episode ended there')).toBe(
+      t.last.done,
+    );
   }
   const q = numbers(printed[at++]?.split('=')[1]);
   t.Q[d.world.start]?.forEach((value, a) => {
@@ -89,6 +93,26 @@ function check(out: string, d: PythonData) {
           .join(' → ')}`
       : 'Best path from the start: none yet',
   );
+
+  // The map: the best move in every square (the first on a tie).
+  expect(printed[at + 1]).toMatch(/^Best move in each square/);
+  expect(printed[at + 2]?.trim()).toBe(
+    'ABCDEFGHIJ'.slice(0, d.world.columns).split('').join(' '),
+  );
+  for (let r = 0; r < d.world.rows; r++) {
+    const expected = Array.from({ length: d.world.columns }, (_, c) => {
+      const cell = r * d.world.columns + c;
+      const values = t.Q[cell] ?? [];
+      if (cell === d.world.goal) return '*';
+      if (d.world.cats.includes(cell)) return 'X';
+      if (d.world.walls.includes(cell)) return '#';
+      if (values.every((value) => value === 0)) return '·';
+      return '↑→↓←'[values.indexOf(Math.max(...values))];
+    });
+    expect(printed[at + 3 + r]?.trim()).toBe(
+      [String(r + 1), ...expected].join(' '),
+    );
+  }
 }
 
 describe('the Python versions replay the Lab’s training', () => {
