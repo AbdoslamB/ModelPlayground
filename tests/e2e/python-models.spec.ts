@@ -7,13 +7,14 @@ import { expect, test } from '@playwright/test';
 
 import { openLab, readySlugs } from './helpers';
 
+/** A page's (first) Python section; A/B Testing has one per step. */
+const box = (page: Page) => page.locator('details.py').first();
+
 /** Opens the Python section and waits for the code editor. */
 async function openPython(page: Page) {
-  const open = await page
-    .locator('details.py')
-    .evaluate((d) => (d as HTMLDetailsElement).open);
-  if (!open) await page.locator('.py__summary').click();
-  const editor = page.locator('.py .cm-content');
+  const open = await box(page).evaluate((d) => (d as HTMLDetailsElement).open);
+  if (!open) await box(page).locator('.py__summary').click();
+  const editor = box(page).locator('.cm-content');
   await editor.waitFor();
   return editor;
 }
@@ -28,7 +29,7 @@ for (const slug of readySlugs()) {
       // The editor draws only the lines in view, so check the top of the code.
       await expect(editor).toContainText(/^(import|from|#) /);
       const first = await editor.innerText();
-      const tabs = page.locator('.py').getByRole('tab');
+      const tabs = box(page).getByRole('tab');
       await expect(tabs).toHaveCount(2);
       await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
       await tabs.last().click();
@@ -53,7 +54,7 @@ for (const slug of readySlugs()) {
       const context = await browser.newContext({ javaScriptEnabled: false });
       const page = await context.newPage();
       await page.goto(path);
-      await page.locator('.py__summary').click();
+      await box(page).locator('.py__summary').click();
       await expect(page.locator('#py-code')).toContainText('print(');
       await context.close();
     });
@@ -70,16 +71,15 @@ test('every model’s Plain Python or NumPy program runs in the browser', async 
     await openLab(page, `models/${slug}/`);
     await openPython(page);
     // The tab that is not scikit-learn or SciPy: Plain Python, or NumPy.
-    const tab = page
-      .locator('.py')
+    const tab = box(page)
       .getByRole('tab')
       .filter({ hasNotText: /scikit-learn|SciPy/ })
       .first();
     await tab.click();
-    await page.locator('.py').getByRole('button', { name: 'Run' }).click();
-    await expect(page.locator('.py__output'), slug).toBeVisible({
+    await box(page).getByRole('button', { name: 'Run' }).click();
+    await expect(box(page).locator('.py__output'), slug).toBeVisible({
       timeout: 120_000,
     });
-    await expect(page.locator('.py__error'), slug).toHaveCount(0);
+    await expect(box(page).locator('.py__error'), slug).toHaveCount(0);
   }
 });

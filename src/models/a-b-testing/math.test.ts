@@ -24,6 +24,7 @@ import {
   splitCheck,
   twoSided,
   welch,
+  welchTotals,
 } from './math';
 
 /** Relative closeness, for numbers of any size. */
@@ -291,6 +292,28 @@ describe('guardrails, money and text', () => {
     expect(mdeText(0.005)).toBe('0.5%');
     expect(dollars(-1250.4)).toBe('−$1,250');
     expect(dollars(4000)).toBe('$4,000');
+  });
+});
+
+describe('the six cases of step 7', () => {
+  it.each(data.cases)(
+    '$name: its simulated test lands in its own case, as in SciPy',
+    (c) => {
+      const r = welchTotals(c.control, c.treatment, 0.05);
+      expect(ciCase(r.lo, r.hi, 0.02)).toBe(c.id);
+      const ref = (fixtures.cases as Record<string, Record<string, number>>)[
+        c.id
+      ];
+      close(r.lift, ref?.lift ?? NaN, 1e-10);
+      close(r.lo, ref?.lo ?? NaN, 1e-10);
+      close(r.hi, ref?.hi ?? NaN, 1e-10);
+    },
+  );
+
+  it('covers every case once', () => {
+    expect(data.cases.map((c) => c.id).sort()).toEqual(
+      ['borderline', 'none', 'small', 'uncertain', 'win', 'worse'].sort(),
+    );
   });
 });
 

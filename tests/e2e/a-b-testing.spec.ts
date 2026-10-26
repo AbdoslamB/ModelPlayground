@@ -201,3 +201,32 @@ test('the page has no axe violations in either theme', async ({
     expect(results.violations, scheme).toEqual([]);
   }
 });
+
+test('every step’s Python program runs in the browser', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'one download is enough');
+  test.setTimeout(5 * 60_000);
+  await openLab(page, path);
+  const boxes = page.locator('details.py');
+  await expect(boxes).toHaveCount(4);
+  const titles = await boxes.locator('.py__summary').allInnerTexts();
+  expect(titles.map((t) => t.trim())).toEqual([
+    'Step 3 in Python: plan the test',
+    'Step 5 in Python: check the data',
+    'Step 6 in Python: test the difference',
+    'Step 7 in Python: decide',
+  ]);
+  for (let i = 0; i < 4; i++) {
+    const box = boxes.nth(i);
+    await box.locator('.py__summary').click();
+    await box.locator('.cm-content').waitFor();
+    const plain = box.getByRole('tab', { name: 'Plain Python' });
+    if ((await plain.count()) > 0) await plain.click();
+    await box.getByRole('button', { name: 'Run' }).click();
+    await expect(box.locator('.py__output'), titles[i]).toBeVisible({
+      timeout: 120_000,
+    });
+    await expect(box.locator('.py__error'), titles[i]).toHaveCount(0);
+  }
+});

@@ -11,9 +11,9 @@
 
   import { onMount } from 'svelte';
 
-  import type { PythonProgram } from '../../lib/python';
   import type { TableColumn } from '../../ui/table';
   import type { Dataset } from './data';
+  import type { StoryPython } from './python';
   import type { Entry, Metric } from './store.svelte';
 
   import { formatNumber } from '../../lib/format';
@@ -39,8 +39,8 @@
     dataset: Dataset;
     /** KaTeX HTML of the formulas, rendered at build time. */
     formulas: { hypotheses: string; n: string; z: string };
-    /** The Python programs for the opening state, written at build time. */
-    initialPython: PythonProgram[];
+    /** Each step's Python programs for the opening state, written at build time. */
+    initialPython: StoryPython;
     // The story's static text, from Page.astro.
     vp: Snippet;
     intro1: Snippet;
@@ -229,20 +229,34 @@
       code = module;
     });
   });
-  const python = $derived.by(() =>
-    code
-      ? code.programs({
-          title: lab.test.title,
-          days: lab.test.days.slice(0, lab.today),
-          alpha: lab.alpha,
-          power: lab.power,
-          mde: lab.mdeFraction,
-          mean: dataset.history.mean,
-          sd: dataset.history.sd,
-          perGroupPerDay: lab.perGroupPerDay,
-        })
-      : initialPython,
-  );
+  const python: StoryPython = $derived.by(() => {
+    const r = lab.result;
+    if (!code || !r) return initialPython;
+    return code.storyPrograms({
+      plan: {
+        alpha: lab.alpha,
+        power: lab.power,
+        mde: lab.mdeFraction,
+        mean: dataset.history.mean,
+        sd: dataset.history.sd,
+        perGroupPerDay: lab.perGroupPerDay,
+      },
+      test: {
+        title: lab.test.title,
+        days: lab.test.days.slice(0, lab.today),
+        alpha: lab.alpha,
+      },
+      decide: {
+        lift: r.lift,
+        lo: r.lo,
+        hi: r.hi,
+        meanC: r.meanC,
+        mde: lab.mdeFraction,
+        searchers: dataset.searchersPerDay,
+        cost: lab.cost,
+      },
+    });
+  });
 
   // ── Step 7: how the learner's choices played out ──
   const review = $derived([
@@ -651,6 +665,11 @@
         {/if}
       </div>
     {/if}
+    <PythonBox
+      title="Step 3 in Python: plan the test"
+      programs={python.plan}
+      lead="The contract from step 2 turned into users and days. SciPy and Plain Python get the two z values the same way, from the normal distribution."
+    />
     {@render next(3)}
   </section>
 
@@ -959,6 +978,12 @@
           : 'none known during the test.'}
       </li>
     </ul>
+    <PythonBox
+      name="py-check"
+      title="Step 5 in Python: check the data"
+      programs={python.check}
+      lead="The test up to today, as each group's daily totals. It runs the split check, then compares the lift in week 1 with week 2. SciPy has the χ² test built in; Plain Python works it out with math.erfc."
+    />
     {@render next(5)}
   </section>
 
@@ -1005,8 +1030,10 @@
       </p>
     {/if}
     <PythonBox
-      programs={python}
-      lead="Steps 5 and 6 in code: the test up to today, as each group's daily totals. It pools the days, runs the split check and Welch's z-test, and plans the test, printing the numbers above. SciPy does the normal tails and the χ² test; Plain Python uses math.erfc."
+      name="py-test"
+      title="Step 6 in Python: test the difference"
+      programs={python.test}
+      lead="The test up to today, as each group's daily totals. It pools the days into one total per group, then works out z, the p-value and the interval above. SciPy gives the normal tails; Plain Python uses math.erfc."
     />
     {@render next(6)}
   </section>
@@ -1079,6 +1106,12 @@
     </ul>
     <h3>The six cases</h3>
     <div class="cases" data-found={lab.found}>{@render cases()}</div>
+    <PythonBox
+      name="py-decide"
+      title="Step 7 in Python: decide"
+      programs={python.decide}
+      lead="The interval from step 6 and the cost slider: which of the six cases the interval falls in, and what the lift is worth a day. No library needed."
+    />
   </section>
 </div>
 

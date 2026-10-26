@@ -128,6 +128,62 @@ def simulate(kind: str, seed: int) -> list[dict]:
     return days
 
 
+def two_weeks(lift: float, searchers: int, seed: int) -> dict:
+    """One whole 14-day test at once: each group's users, mean and sd."""
+    rng = np.random.default_rng(seed)
+    total = int(rng.poisson(searchers * DAYS))
+    n_c = int(rng.binomial(total, 0.5))
+    n_t = total - n_c
+    totals = {}
+    for arm, n, buy in [("control", n_c, BUY), ("treatment", n_t, BUY * (1 + lift))]:
+        g = group(n, spend(rng, n, buy), 0, LATENCY)
+        totals[arm] = {"n": g["n"], "mean": g["mean"], "sd": g["sd"]}
+    return totals
+
+
+# The six cases of step 7, each drawn from a real simulated test: the true
+# lift, the traffic (searchers a day) and what the interval must show.
+CASES = [
+    {"id": "win", "name": "Clear win", "verdict": "Launch", "lift": 0.04, "searchers": SEARCHERS},
+    {"id": "borderline", "name": "Borderline", "verdict": "Run a longer test", "lift": 0.02, "searchers": SEARCHERS},
+    # Real but too small needs an interval narrower than the MDE: 4× the traffic.
+    {
+        "id": "small",
+        "name": "Real but too small",
+        "verdict": "Don’t launch",
+        "lift": 0.01,
+        "searchers": 4 * SEARCHERS,
+    },
+    {"id": "uncertain", "name": "Too uncertain", "verdict": "Run a bigger test", "lift": 0.01, "searchers": SEARCHERS},
+    {"id": "none", "name": "No useful effect", "verdict": "Don’t launch", "lift": 0.0, "searchers": SEARCHERS},
+    {"id": "worse", "name": "Worse", "verdict": "Don’t launch", "lift": -0.03, "searchers": SEARCHERS},
+]
+
+
+def interval(totals: dict, alpha: float = ALPHA) -> tuple[float, float, float]:
+    """The lift and its interval, as fractions of the control mean."""
+    c, t = totals["control"], totals["treatment"]
+    diff = t["mean"] - c["mean"]
+    se = math.sqrt(t["sd"] ** 2 / t["n"] + c["sd"] ** 2 / c["n"])
+    crit = float(stats.norm.ppf(1 - alpha / 2))
+    return diff / c["mean"], (diff - crit * se) / c["mean"], (diff + crit * se) / c["mean"]
+
+
+def six_cases() -> list[dict]:
+    cases = []
+    for i, case in enumerate(CASES):
+        for seed in range(1000 * (i + 1), 1000 * (i + 1) + 500):
+            totals = two_weeks(case["lift"], case["searchers"], seed)
+            lift, lo, hi = interval(totals)
+            if ci_case(lo, hi) == case["id"]:
+                break
+        else:
+            raise SystemExit(f"case {case['id']}: no seed lands in it")
+        cases.append(case | {"seed": seed} | totals)
+        print(f"case {case['id']:10} seed {seed}: {lift:+.2%} [{lo:+.2%}, {hi:+.2%}]")
+    return cases
+
+
 # ── The analysis, as the page does it (z-test on pooled daily totals) ──────────
 
 
@@ -384,6 +440,8 @@ def main() -> None:
     fixtures["aaRuns"] = aa_runs(AA_SEED, AA_TESTS, DAYS)
     runs = fixtures["aaRuns"]
     print(f"A/A runs: {runs['ever'] / AA_TESTS:.1%} ever cross, {runs['end'] / AA_TESTS:.1%} at the end")
+    cases = six_cases()
+    fixtures["cases"] = {c["id"]: dict(zip(("lift", "lo", "hi"), interval(c), strict=True)) for c in cases}
 
     dataset = {
         "id": "stylepulse",
@@ -402,6 +460,7 @@ def main() -> None:
         "power": {"min": 0.5, "max": 0.95, "step": 0.05, "initial": POWER},
         "cost": {"min": 0, "max": 30000, "step": 500, "initial": 4000},
         "sample": sample_rows(),
+        "cases": cases,
         "tests": tests,
     }
     DATA.parent.mkdir(parents=True, exist_ok=True)

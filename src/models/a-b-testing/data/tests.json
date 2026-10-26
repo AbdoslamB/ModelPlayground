@@ -86,6 +86,116 @@
    "latency": 170
   }
  ],
+ "cases": [
+  {
+   "id": "win",
+   "name": "Clear win",
+   "verdict": "Launch",
+   "lift": 0.04,
+   "searchers": 100000,
+   "seed": 1000,
+   "control": {
+    "n": 700581,
+    "mean": 5.01062,
+    "sd": 20.008813
+   },
+   "treatment": {
+    "n": 699490,
+    "mean": 5.230329,
+    "sd": 20.399496
+   }
+  },
+  {
+   "id": "borderline",
+   "name": "Borderline",
+   "verdict": "Run a longer test",
+   "lift": 0.02,
+   "searchers": 100000,
+   "seed": 2000,
+   "control": {
+    "n": 699516,
+    "mean": 5.020478,
+    "sd": 20.05638
+   },
+   "treatment": {
+    "n": 700735,
+    "mean": 5.136598,
+    "sd": 20.251815
+   }
+  },
+  {
+   "id": "small",
+   "name": "Real but too small",
+   "verdict": "Don’t launch",
+   "lift": 0.01,
+   "searchers": 400000,
+   "seed": 3002,
+   "control": {
+    "n": 2799637,
+    "mean": 4.986217,
+    "sd": 19.966233
+   },
+   "treatment": {
+    "n": 2797553,
+    "mean": 5.040689,
+    "sd": 20.095585
+   }
+  },
+  {
+   "id": "uncertain",
+   "name": "Too uncertain",
+   "verdict": "Run a bigger test",
+   "lift": 0.01,
+   "searchers": 100000,
+   "seed": 4002,
+   "control": {
+    "n": 700019,
+    "mean": 4.979087,
+    "sd": 19.916981
+   },
+   "treatment": {
+    "n": 700288,
+    "mean": 5.037378,
+    "sd": 20.040104
+   }
+  },
+  {
+   "id": "none",
+   "name": "No useful effect",
+   "verdict": "Don’t launch",
+   "lift": 0.0,
+   "searchers": 100000,
+   "seed": 5002,
+   "control": {
+    "n": 700153,
+    "mean": 5.005394,
+    "sd": 19.97382
+   },
+   "treatment": {
+    "n": 699686,
+    "mean": 4.956088,
+    "sd": 19.888435
+   }
+  },
+  {
+   "id": "worse",
+   "name": "Worse",
+   "verdict": "Don’t launch",
+   "lift": -0.03,
+   "searchers": 100000,
+   "seed": 6000,
+   "control": {
+    "n": 700672,
+    "mean": 5.007563,
+    "sd": 20.01798
+   },
+   "treatment": {
+    "n": 699727,
+    "mean": 4.86444,
+    "sd": 19.755647
+   }
+  }
+ ],
  "tests": [
   {
    "id": "aa",

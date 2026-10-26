@@ -142,8 +142,11 @@ export function pool(days: readonly Day[], arm: Arm): Pooled {
 
 /** Welch's z-test of the treatment against the control, with its CI. */
 export function welch(days: readonly Day[], alpha: number): Result {
-  const c = pool(days, 'control');
-  const t = pool(days, 'treatment');
+  return welchTotals(pool(days, 'control'), pool(days, 'treatment'), alpha);
+}
+
+/** The same test from each group's totals (users, mean and sd). */
+export function welchTotals(c: Pooled, t: Pooled, alpha: number): Result {
   const diff = t.mean - c.mean;
   const se = Math.sqrt((t.sd * t.sd) / t.n + (c.sd * c.sd) / c.n);
   const z = diff / se;

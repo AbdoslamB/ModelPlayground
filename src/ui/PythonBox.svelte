@@ -19,14 +19,24 @@
     programs: PythonProgram[];
     /** A sentence or two above the code: what it does. */
     lead: string;
+    /** The section's title. */
+    title?: string;
+    /** Prefix of the element ids, so a page can hold more than one. */
+    name?: string;
   }
 
-  let { programs, lead }: Props = $props();
+  let {
+    programs,
+    lead,
+    title = 'Try it in Python',
+    name = 'py',
+  }: Props = $props();
 
   let open = $state(false);
   /** False until the page's JavaScript runs: without it, the code shows. */
   let started = $state(false);
-  let Panel: Component<{ programs: PythonProgram[] }> | null = $state.raw(null);
+  let Panel: Component<{ programs: PythonProgram[]; name?: string }> | null =
+    $state.raw(null);
 
   async function loadPanel() {
     if (Panel) return;
@@ -63,18 +73,18 @@
         stroke-linejoin="round"
       />
     </svg>
-    Try it in Python
+    {title}
   </summary>
 
   <div class="py__body">
     <p class="py__lead">{lead}</p>
     {#if Panel}
-      <Panel {programs} />
+      <Panel {programs} {name} />
     {:else if open || !started}
       <!-- While closed, the code is not built: the Lab can change every frame. -->
-      <label class="visually-hidden" for="py-code">Python code</label>
+      <label class="visually-hidden" for={`${name}-code`}>Python code</label>
       <textarea
-        id="py-code"
+        id={`${name}-code`}
         class="py__code"
         readonly
         rows={first.split('\n').length}

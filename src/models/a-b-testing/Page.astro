@@ -12,9 +12,17 @@ import { datasets } from './data';
 import { equations } from './equations';
 import Explain from './Explain.astro';
 import Lab from './Lab.svelte';
-import { aaRuns, dollars, normalQuantile, share } from './math';
+import {
+  aaRuns,
+  dollars,
+  normalQuantile,
+  percent,
+  share,
+  welch,
+  welchTotals,
+} from './math';
 import { meta } from './meta';
-import { programs } from './python';
+import { storyPrograms } from './python';
 
 const tex = (id: string) => {
   const found = equations.find((e) => e.id === id);
@@ -43,51 +51,41 @@ const runs = aaRuns(
 const users = (value: number) => formatNumber(value, 0);
 
 // The story opens on day 1 of the first scenario.
-const initialPython = programs({
-  title: test.title,
-  days: test.days.slice(0, 1),
-  alpha,
-  power: dataset.power.initial,
-  mde,
-  mean,
-  sd: dataset.history.sd,
-  perGroupPerDay: searchers / 2,
+const first = welch(test.days.slice(0, 1), alpha);
+const initialPython = storyPrograms({
+  plan: {
+    alpha,
+    power: dataset.power.initial,
+    mde,
+    mean,
+    sd: dataset.history.sd,
+    perGroupPerDay: searchers / 2,
+  },
+  test: { title: test.title, days: test.days.slice(0, 1), alpha },
+  decide: {
+    lift: first.lift,
+    lo: first.lo,
+    hi: first.hi,
+    meanC: first.meanC,
+    mde,
+    searchers,
+    cost: dataset.cost.initial,
+  },
 });
 
-// The six cases, as made-up intervals against 0 and the MDE.
-const cases = [
-  { id: 'win', lo: 2.6, hi: 4.4, name: 'Clear win', verdict: 'Launch' },
-  {
-    id: 'borderline',
-    lo: 0.6,
-    hi: 3.2,
-    name: 'Borderline',
-    verdict: 'Run a longer test',
-  },
-  {
-    id: 'small',
-    lo: 0.4,
-    hi: 1.5,
-    name: 'Real but too small',
-    verdict: 'Don’t launch',
-  },
-  {
-    id: 'uncertain',
-    lo: -0.9,
-    hi: 3,
-    name: 'Too uncertain',
-    verdict: 'Run a bigger test',
-  },
-  {
-    id: 'none',
-    lo: -0.8,
-    hi: 0.9,
-    name: 'No useful effect',
-    verdict: 'Don’t launch',
-  },
-  { id: 'worse', lo: -2.2, hi: -0.6, name: 'Worse', verdict: 'Don’t launch' },
-];
-const cx = (v: number) => 300 + v * 50;
+// The six cases: one test simulated by python/a_b_testing.py for each, with
+// its interval worked out here by the page's own test.
+const cases = dataset.cases.map((c) => ({
+  ...c,
+  result: welchTotals(c.control, c.treatment, alpha),
+}));
+const ends = cases.flatMap((c) => [c.result.lo, c.result.hi]);
+const left = Math.floor(Math.min(...ends) * 100) - 0.5;
+const right = Math.ceil(Math.max(mde, ...ends) * 100) + 0.5;
+// The intervals sit right of the names, in percent of the control mean.
+const cx = (v: number) => 230 + ((v - left) / (right - left)) * 360;
+const traffic = (c: (typeof cases)[number]) =>
+  c.searchers === searchers ? '' : `, ${c.searchers / searchers}× the traffic`;
 ---
 
 <ModelLayout meta={meta}>
@@ -200,13 +198,19 @@ const cx = (v: number) => 300 + v * 50;
         aria-label="Six intervals against 0 and the MDE: a clear win, borderline, real but too small, too uncertain, no useful effect, and worse. The one that matches your test is highlighted."
       >
         <line class="cf-zero" x1={cx(0)} x2={cx(0)} y1="18" y2="290"></line>
-        <line class="cf-mde" x1={cx(2)} x2={cx(2)} y1="18" y2="290"></line>
+        <line
+          class="cf-mde"
+          x1={cx(mde * 100)}
+          x2={cx(mde * 100)}
+          y1="18"
+          y2="290"
+        ></line>
         <text class="cf-axis" x={cx(0)} y="12" text-anchor="middle">
           0
         </text>
         <text
           class="cf-axis cf-axis--mde"
-          x={cx(2)}
+          x={cx(mde * 100)}
           y="12"
           text-anchor="middle"
         >
@@ -230,17 +234,35 @@ const cx = (v: number) => 300 + v * 50;
             </text>
             <line
               class="cf-ci"
-              x1={cx(c.lo)}
-              x2={cx(c.hi)}
+              x1={cx(c.result.lo * 100)}
+              x2={cx(c.result.hi * 100)}
               y1={45 + i * 44}
               y2={45 + i * 44}
+            />
+            <circle
+              class="cf-point"
+              cx={cx(c.result.lift * 100)}
+              cy={45 + i * 44}
+              r="4"
             />
           </g>
         ))}
       </svg>
+      <ul class="cases-list">
+        {cases.map((c) => (
+          <li>
+            <strong>{c.name}:</strong> a test simulated with a true lift of{' '}
+            {percent(c.lift, 0)}
+            {traffic(c)} measured {percent(c.result.lift)}, interval{' '}
+            {percent(c.result.lo)} to {percent(c.result.hi)}.
+          </li>
+        ))}
+      </ul>
       <p class="cases-note">
-        The highlighted row is your test. Peeking makes the wrong row likely: of{' '}
-        {users(runs.tests)} simulated tests of a useless change,{' '}
+        Each row is a real test, simulated by the page’s Python data script
+        (python/a_b_testing.py), and its interval is worked out with the same
+        test as yours. The highlighted row is your test. Peeking makes the wrong
+        row likely: of {users(runs.tests)} simulated tests of a useless change,{' '}
         {share(runs.ever / runs.tests)}
         looked like a win on some day.
       </p>
@@ -297,6 +319,21 @@ const cx = (v: number) => 300 + v * 50;
     stroke: var(--c-muted);
     stroke-width: 5;
     stroke-linecap: round;
+  }
+
+  .cf-point {
+    fill: var(--c-bg);
+    stroke: var(--c-text);
+    stroke-width: 2;
+  }
+
+  .cases-list {
+    display: grid;
+    gap: var(--s-1);
+    margin: 0;
+    padding-inline-start: 1.2em;
+    color: var(--c-muted);
+    font-size: var(--fs-14);
   }
 
   :global([data-found='win']) .case--win .cf-row,

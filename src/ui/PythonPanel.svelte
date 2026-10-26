@@ -14,8 +14,14 @@
 
   import { runPython } from '../lib/python';
 
-  /** One per tab; with a single program the tab bar is left out. */
-  let { programs }: { programs: PythonProgram[] } = $props();
+  interface Props {
+    /** One per tab; with a single program the tab bar is left out. */
+    programs: PythonProgram[];
+    /** Prefix of the element ids, so a page can hold more than one. */
+    name?: string;
+  }
+
+  let { programs, name = 'py' }: Props = $props();
 
   // svelte-ignore state_referenced_locally
   let tab = $state(programs[0]?.id ?? '');
@@ -93,9 +99,9 @@
         <button
           type="button"
           role="tab"
-          id={`py-tab-${t.id}`}
+          id={`${name}-tab-${t.id}`}
           aria-selected={tab === t.id}
-          aria-controls="py-panel"
+          aria-controls={`${name}-panel`}
           class="py__tab"
           onclick={() => {
             tab = t.id;
@@ -109,15 +115,15 @@
   {/if}
 
   <div
-    id="py-panel"
+    id={`${name}-panel`}
     role={programs.length > 1 ? 'tabpanel' : undefined}
-    aria-labelledby={programs.length > 1 ? `py-tab-${tab}` : undefined}
+    aria-labelledby={programs.length > 1 ? `${name}-tab-${tab}` : undefined}
   >
     <div class="py__editor" bind:this={host} hidden={!editor}></div>
-    <label class="visually-hidden" for="py-code">Python code</label>
+    <label class="visually-hidden" for={`${name}-code`}>Python code</label>
     <textarea
       hidden={editor !== null}
-      id="py-code"
+      id={`${name}-code`}
       class="py__code"
       rows={lines}
       wrap="off"
@@ -160,12 +166,12 @@
           type="button"
           class="pill"
           disabled={!edited && !result}
-          aria-describedby="py-tip-reset"
+          aria-describedby={`${name}-tip-reset`}
           onclick={reset}
         >
           Reset
         </button>
-        <span class="tip" role="tooltip" id="py-tip-reset">
+        <span class="tip" role="tooltip" id={`${name}-tip-reset`}>
           Erase your changes and go back to the Lab's code
         </span>
       </span>
@@ -178,7 +184,7 @@
           class="pill"
           class:pill--busy={running}
           disabled={running}
-          aria-describedby="py-tip-run"
+          aria-describedby={`${name}-tip-run`}
           onclick={() => {
             void run();
           }}
@@ -191,7 +197,7 @@
             Run
           {/if}
         </button>
-        <span class="tip tip--end" role="tooltip" id="py-tip-run">
+        <span class="tip tip--end" role="tooltip" id={`${name}-tip-run`}>
           Execute your current code and see what happens.
         </span>
       </span>

@@ -1,5 +1,5 @@
 import type { ParamRange } from '../../types';
-import type { Day } from '../math';
+import type { Case, Day, Pooled } from '../math';
 
 import data from './tests.json';
 
@@ -15,6 +15,19 @@ export interface AbTest {
   note: string;
   seed: number;
   days: Day[];
+}
+
+/** One of the six interval cases of step 7: a whole simulated test. */
+export interface CaseTest {
+  id: Case;
+  name: string;
+  verdict: string;
+  /** The true lift in the simulation, and its traffic (searchers a day). */
+  lift: number;
+  searchers: number;
+  seed: number;
+  control: Pooled;
+  treatment: Pooled;
 }
 
 /** One searcher on one day, as logged. */
@@ -53,6 +66,8 @@ export interface Dataset {
   cost: ParamRange;
   /** Five raw searcher-day rows, to show what the logs hold. */
   sample: SampleRow[];
+  /** One simulated test per interval case, for the figure in step 7. */
+  cases: CaseTest[];
   /** The A/A test first, then the scenarios of step 5. */
   tests: AbTest[];
 }
